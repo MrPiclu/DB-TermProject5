@@ -1,6 +1,6 @@
-# contact1313
+# DB_Build_X
 
-A new Flutter project.
+Project for Database lecture Term-Project
 
 ## Getting Started
 
