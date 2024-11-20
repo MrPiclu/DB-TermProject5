@@ -14,3 +14,6 @@ const iconColor1 = Color.fromRGBO(255, 255, 255, 1.0);
 
 //아이콘 배경 색
 const iconBackgroundColor1 = Color.fromRGBO(35, 35, 35, 1.0);
+
+//선 색상
+const lineColor1 = Colors.white38;

@@ -1,4 +1,5 @@
 import 'package:contact1313/theme/colors.dart';
+import 'package:contact1313/widgets/main_container.dart';
 import 'package:flutter/material.dart';
 import 'widgets/custom_container.dart';
 import 'widgets/floating_button.dart';
@@ -27,10 +28,13 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       backgroundColor: backGround1,
       body: Center(
-        child: Column(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const CustomContainer(),
+            Container(width: 1,height: double.infinity, color: lineColor1),
+            const MainContainer(),
+            Container(width: 1,height: double.infinity, color: lineColor1),
           ],
         ),
       ),

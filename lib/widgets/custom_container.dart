@@ -24,7 +24,7 @@ class _CustomContainerState extends State<CustomContainer> {
     return Container(
       color: backGround1,
       width: 210,
-      height: 1200,
+      height: MediaQuery.of(context).size.height,
       padding: const EdgeInsets.only(
         top: 12,
         left: 8,
@@ -201,7 +201,7 @@ class _CustomContainerState extends State<CustomContainer> {
     return Container(
       width: double.infinity,
       height: radius,
-      color: Colors.white38,
+      color: lineColor1,
     );
   }
 
