@@ -122,8 +122,8 @@ class _CustomContainerState extends State<CustomContainer> {
           ),
           const SizedBox(width: 8),
           FloatingButton(
-              onPressed:_incrementCounter, colorVal: Theme.of(context).customIconBackgroundColor1, toolTip :'Setti1ng',
-              icon: Icons.more_horiz, iconSize: iconSize2, height: 48, width: 52,iconColor: Theme.of(context).customIconColor1,
+              onPressed:_incrementCounter, colorVal: Theme.of(context).customBackgroundInvertColor1, toolTip :'Setti1ng',
+              icon: Icons.more_horiz, iconSize: iconSize2, height: 48, width: 52,iconColor: Theme.of(context).customIconInvertColor1,
           ),
         ]
     );

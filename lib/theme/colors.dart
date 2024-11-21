@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 //다크 모드에서의 색상
 //백그라운드 배경 색
 const backGround1 = Color.fromRGBO(23, 23, 23, 1.0);
-const backGround2 = Color.fromRGBO(41, 41, 41, 1.0);
+const backGround2 = Color.fromRGBO(81, 81, 81, 1.0);
 //글자 색
 const textColor1 = Color.fromRGBO(220, 220, 220, 1.0);
 const textColor2 = Color.fromRGBO(158, 158, 158, 1.0);
 //아이콘 색
-const iconColor1 = Color.fromRGBO(255, 255, 255, 1.0);
+const iconColor1 = Color.fromRGBO(220, 220, 220, 1.0);
 const iconColor2= Color(0xFFB3B3B3);
 //아이콘 배경 색
 const iconBackgroundColor1 = Color.fromRGBO(35, 35, 35, 1.0);
@@ -25,7 +25,7 @@ const wtextColor1 = Color.fromRGBO(33, 33, 33, 1.0); // 어두운 회색 (헤드
 const wtextColor2 = Color.fromRGBO(97, 97, 97, 1.0); // 중간 밝기 회색 (보조 텍스트용)
 
 // 아이콘 색
-const wiconColor1 = Color.fromRGBO(66, 66, 66, 1.0); // 어두운 색상
+const wiconColor1 = Color.fromRGBO(81, 81, 81, 1.0);
 const wiconColor2 = Color.fromRGBO(158, 158, 158, 1.0); // 연한 회색
 
 // 아이콘 배경 색

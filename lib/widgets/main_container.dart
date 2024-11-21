@@ -68,7 +68,9 @@ class _MainContainerState extends State<MainContainer> {
                 children: [
                   CircleAvatar(
                       radius: 25,
-                      backgroundImage: NetworkImage("https://scontent-ssn1-1.cdninstagram.com/v/t51.29350-15/464502952_1199581864451283_7169628620535368863_n.webp?stp=dst-jpg_e35&efg=eyJ2ZW5jb2RlX3RhZyI6ImltYWdlX3VybGdlbi4xMDgweDEwODAuc2RyLmYyOTM1MC5kZWZhdWx0X2ltYWdlIn0&_nc_ht=scontent-ssn1-1.cdninstagram.com&_nc_cat=103&_nc_ohc=7dfIiYnqfwMQ7kNvgGJg9Yg&_nc_gid=8492de57c6564e028b451abb7fc89209&edm=ALQROFkBAAAA&ccb=7-5&ig_cache_key=MzQ4NjAwNDc3NDA0NTI2MTYwOQ%3D%3D.3-ccb7-5&oh=00_AYAVEF5Wa_V6cPUB65_rsdC1sSJiGmQQnlV4vhsNrMMhug&oe=6743E79B&_nc_sid=fc8dfb")
+                      //Rin : https://i.pinimg.com/736x/ab/75/af/ab75af0e6429d3b58af76f9333564c93.jpg
+                      //Nadeshiko : https://preview.redd.it/despite-the-art-style-changed-nadeshiko-is-mega-cute-v0-ryv8wimm0avc1.jpeg?width=1080&crop=smart&auto=webp&s=84ab0d027219b4e73f47cbe76c80362c01eb65b4
+                      backgroundImage: NetworkImage("https://preview.redd.it/despite-the-art-style-changed-nadeshiko-is-mega-cute-v0-ryv8wimm0avc1.jpeg?width=1080&crop=smart&auto=webp&s=84ab0d027219b4e73f47cbe76c80362c01eb65b4")
                   ),
                   const SizedBox(width: 13),
                   Expanded(

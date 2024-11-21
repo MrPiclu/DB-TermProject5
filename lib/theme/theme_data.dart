@@ -21,10 +21,12 @@ extension CustomTheme on ThemeData {
   Color get customIconColor1 => brightness == Brightness.dark
       ? iconColor1// 다크 모드 색상
       : wiconColor1;  // 라이트 모드 색상
-
   Color get customIconColor2 => brightness == Brightness.dark
       ? iconColor2// 다크 모드 색상
       : wiconColor2;  // 라이트 모드 색상
+  Color get customIconInvertColor1 => brightness == Brightness.dark
+      ? wiconColor1// 다크 모드 색상
+      : iconColor1;  // 라이트 모드 색상
 
   Color get customTextColor1 => brightness == Brightness.dark
       ? textColor1// 다크 모드 색상
@@ -43,5 +45,8 @@ extension CustomTheme on ThemeData {
   Color get customBackgroundColor2 => brightness == Brightness.dark
       ? backGround2// 다크 모드 색상
       : wbackGround2;  // 라이트 모드 색상
+  Color get customBackgroundInvertColor1 => brightness == Brightness.dark
+      ? wbackGround2// 다크 모드 색상
+      : backGround2;  // 라이트 모드 색상
 
 }
