@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+const transparentColor = Color.fromRGBO(0, 0, 0, 0.0);
+
 //다크 모드에서의 색상
 //백그라운드 배경 색
 const backGround1 = Color.fromRGBO(23, 23, 23, 1.0);

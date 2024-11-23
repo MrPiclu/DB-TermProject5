@@ -1,7 +1,12 @@
 import 'dart:ui';
+import 'package:contact1313/main_screen.dart';
+import 'package:contact1313/widgets/bookmark_container.dart';
+import 'package:contact1313/widgets/main_container.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:contact1313/theme/theme_data.dart';
 import 'package:flutter/material.dart';
+import 'bookmark_page.dart';
 import 'home_page.dart';
 
 class MyApp extends StatelessWidget {
@@ -16,17 +21,38 @@ class MyApp extends StatelessWidget {
       valueListenable: themeNotifier,
       builder: (context, ThemeMode currentMode, Widget? child) {
 
-        return MaterialApp(
+        return MaterialApp.router(
           scrollBehavior: NoThumbScrollBehavior().copyWith(scrollbars: false),
           theme: darkTheme, // dark Mode 테마 (X 특성상 다크 모드가 default)
           darkTheme: lightTheme, // light Mode 테마
           themeMode: currentMode, // 현재 테마 모드
-          home: MyHomePage(),
+          routerConfig: _router,
         );
       },
     );
   }
 }
+
+final GoRouter _router = GoRouter(
+  initialLocation: "/home",
+  routes: [
+    ShellRoute(
+        builder: (context, state, child){
+          return MainScreen(child: child);
+        },
+        routes: [
+        GoRoute(
+          path: "/home",
+          pageBuilder: (context, state) => const NoTransitionPage(child: MainContainer()),
+        ),
+        GoRoute(
+          path: "/bookmark",
+          pageBuilder: (context, state) => const NoTransitionPage(child: BookmarkContainer()),
+        ),
+    ]
+    )
+  ]
+);
 
 class NoThumbScrollBehavior extends ScrollBehavior {
   @override
