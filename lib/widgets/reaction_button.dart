@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class FloatingButton extends StatelessWidget {
+class ReactionButton extends StatelessWidget {
   final VoidCallback onPressed;
   final Color colorVal;
   final String toolTip;
@@ -10,7 +10,7 @@ class FloatingButton extends StatelessWidget {
   final double height;
   final Color iconColor;
 
-  const FloatingButton({super.key, required this.onPressed, required this.colorVal, required this.toolTip, required this.icon, required this.iconSize, required this.width, required this.height, required this.iconColor});
+  const ReactionButton({super.key, required this.onPressed, required this.colorVal, required this.toolTip, required this.icon, required this.iconSize, required this.width, required this.height, required this.iconColor});
 
   @override
   Widget build(BuildContext context) {

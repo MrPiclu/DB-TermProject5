@@ -49,4 +49,6 @@ extension CustomTheme on ThemeData {
       ? wbackGround2// 다크 모드 색상
       : backGround2;  // 라이트 모드 색상
 
+  Color get customTransparentColor => transparentColor;
+
 }

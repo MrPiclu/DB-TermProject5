@@ -2,10 +2,12 @@ import 'package:contact1313/my_app.dart';
 import 'package:contact1313/theme/size.dart';
 import 'package:contact1313/theme/theme_data.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../home_page.dart';
 import '../theme/colors.dart';
 import 'floating_button.dart';
+import 'search_bar.dart';
 
 class CustomContainer extends StatefulWidget {
   const CustomContainer({super.key});
@@ -17,7 +19,8 @@ class CustomContainer extends StatefulWidget {
 class _CustomContainerState extends State<CustomContainer> {
   bool _isLightMode = false;
 
-  void _incrementCounter() {
+  void _redirectPage(String location) {
+    context.go(location);
   }
 
   void _changeLightNightMode(){
@@ -30,42 +33,53 @@ class _CustomContainerState extends State<CustomContainer> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 210,
-      height: MediaQuery.of(context).size.height,
-      padding: const EdgeInsets.only(
-        top: 12,
-        left: 8,
-        right: 28,
-        bottom: 16,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          _buildSearchBar(context),
-          const SizedBox(height: 8),
-          _buildIconRow(),
-          const SizedBox(height: 8),
-          _buildListSection(),
-          const SizedBox(height: 8),
-          _buildSolidLine(1.0),
-          const SizedBox(height: 8),
-          _buildTextButton(Icons.add,'New DM', Theme.of(context).customTextColor2, iconSize3, Theme.of(context).customIconColor2),
-          const SizedBox(height: 8),
-          _buildTextButton(Icons.mail_outline, 'hong_gildong13', Theme.of(context).customTextColor1, iconSize3, Theme.of(context).customIconColor1),
-          const SizedBox(height: 8),
-          _buildTextButton(Icons.mail_outline, 'hun_i22', Theme.of(context).customTextColor1, iconSize3, Theme.of(context).customIconColor1),
-          const SizedBox(height: 8),
-          _buildTextButton(Icons.mail_outline, 'Shima_Ring', Theme.of(context).customTextColor1, iconSize3, Theme.of(context).customIconColor1),
-          _buildIconRowForDarkMode(),
-        ],
-      ),
+    return Builder(
+      builder: (context) => Container(
+          width: 210,
+          height: MediaQuery.of(context).size.height,
+          padding: const EdgeInsets.only(
+            top: 12,
+            left: 8,
+            right: 28,
+            bottom: 16,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const searchBarContainer(
+                edgeInsets: EdgeInsets.only(
+                  top: 10,
+                  left: 14,
+                  right: 6,
+                  bottom: 10
+                ),
+                round: 10,
+              ),
+              const SizedBox(height: 8),
+              _buildIconRow(),
+              const SizedBox(height: 8),
+              _buildListSection(),
+              const SizedBox(height: 8),
+              _buildSolidLine(1.0),
+              const SizedBox(height: 8),
+              _buildTextButton(Icons.add,'New DM', Theme.of(context).customTextColor2, iconSize3, Theme.of(context).customIconColor2, "/home"),
+              const SizedBox(height: 8),
+              _buildTextButton(Icons.mail_outline, 'hong_gildong13', Theme.of(context).customTextColor1, iconSize3, Theme.of(context).customIconColor1, "/home"),
+              const SizedBox(height: 8),
+              _buildTextButton(Icons.mail_outline, 'hun_i22', Theme.of(context).customTextColor1, iconSize3, Theme.of(context).customIconColor1, "/home"),
+              const SizedBox(height: 8),
+              _buildTextButton(Icons.mail_outline, 'Shima_Ring', Theme.of(context).customTextColor1, iconSize3, Theme.of(context).customIconColor1, "/home"),
+              _buildIconRowForDarkMode(),
+            ],
+          ),
+        ),
+
     );
   }
 
-  Widget _buildSearchBar(BuildContext context) {
+  Widget buildSearchBar(BuildContext context) {
     return InkWell(
       splashColor: Colors.transparent, // 물결 효과 제거
       highlightColor: Colors.transparent, // 강조 효과
@@ -112,17 +126,17 @@ class _CustomContainerState extends State<CustomContainer> {
     return Row(
         children: [
           FloatingButton(
-              onPressed:_incrementCounter, colorVal: Theme.of(context).customIconBackgroundColor1, toolTip :'DM',
+              onPressed:() => _redirectPage("/home"), colorVal: Theme.of(context).customIconBackgroundColor1, toolTip :'DM',
               icon: Icons.send_rounded, iconSize: iconSize2, height: 48, width: 52,iconColor: Theme.of(context).customIconColor1,
           ),
           const SizedBox(width: 8),
           FloatingButton(
-              onPressed:_incrementCounter, colorVal: Theme.of(context).customIconBackgroundColor1, toolTip :'BookMark',
+              onPressed:() => _redirectPage("/bookmark"), colorVal: Theme.of(context).customIconBackgroundColor1, toolTip :'BookMark',
               icon: Icons.bookmark, iconSize: iconSize2, height: 48, width: 52,iconColor: Theme.of(context).customIconColor1,
           ),
           const SizedBox(width: 8),
           FloatingButton(
-              onPressed:_incrementCounter, colorVal: Theme.of(context).customBackgroundInvertColor1, toolTip :'Setti1ng',
+              onPressed:() => _redirectPage("/home"), colorVal: Theme.of(context).customBackgroundInvertColor1, toolTip :'Setting',
               icon: Icons.more_horiz, iconSize: iconSize2, height: 48, width: 52,iconColor: Theme.of(context).customIconInvertColor1,
           ),
         ]
@@ -168,9 +182,9 @@ class _CustomContainerState extends State<CustomContainer> {
               ),
           ),
           const SizedBox(height: 2),
-          _buildTextButton(Icons.recommend,'Recommend', Theme.of(context).customTextColor1, iconSize2, Theme.of(context).customIconColor1),
+          _buildTextButton(Icons.recommend,'Recommend', Theme.of(context).customTextColor1, iconSize2, Theme.of(context).customIconColor1, "/bookmark"),
           const SizedBox(height: 2),
-          _buildTextButton(Icons.people,'Following', Theme.of(context).customTextColor1, iconSize2, Theme.of(context).customIconColor1),
+          _buildTextButton(Icons.people,'Following', Theme.of(context).customTextColor1, iconSize2, Theme.of(context).customIconColor1, "/home"),
           const SizedBox(height: 2),
           _buildFavoriteSection(),
         ],
@@ -181,7 +195,7 @@ class _CustomContainerState extends State<CustomContainer> {
   Widget _buildFavoriteSection() {
     return Column(
       children: [
-        _buildTextButton(Icons.favorite,'Favorite', Theme.of(context).customTextColor1, iconSize2, Theme.of(context).customIconColor1),
+        _buildTextButton(Icons.favorite,'Favorite', Theme.of(context).customTextColor1, iconSize2, Theme.of(context).customIconColor1, "/home"),
         _buildSubListItem('Gachon'),
         _buildSubListItem('Foods'),
       ],
@@ -214,13 +228,11 @@ class _CustomContainerState extends State<CustomContainer> {
     );
   }
 
-  Widget _buildTextButton(IconData icon,String text, Color colorVal, double iconSize, Color iconColor){
-    return Container(
+  Widget _buildTextButton(IconData icon,String text, Color colorVal, double iconSize, Color iconColor, String directPage){
+    return SizedBox(
         width: double.infinity,
         child: TextButton.icon(
-          onPressed: () {
-            // 버튼 동작
-          },
+          onPressed: () => _redirectPage(directPage),
           icon: Icon(icon, size: iconSize, color: iconColor), // "+" 버튼
           label: Text(
             text,
