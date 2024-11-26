@@ -136,7 +136,7 @@ class _CustomContainerState extends State<CustomContainer> {
           ),
           const SizedBox(width: 8),
           FloatingButton(
-              onPressed:() => _redirectPage("/home"), colorVal: Theme.of(context).customBackgroundInvertColor1, toolTip :'Setting',
+              onPressed:() => _redirectPage("/profile"), colorVal: Theme.of(context).customBackgroundInvertColor1, toolTip :'Setting',
               icon: Icons.more_horiz, iconSize: iconSize2, height: 48, width: 52,iconColor: Theme.of(context).customIconInvertColor1,
           ),
         ]

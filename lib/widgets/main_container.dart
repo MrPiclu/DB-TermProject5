@@ -3,6 +3,7 @@ import 'package:contact1313/theme/size.dart';
 import 'package:contact1313/theme/theme_data.dart';
 import 'package:flutter/material.dart';
 
+import '../authentication/login.dart';
 import 'tweet_container.dart';
 import '../theme/colors.dart';
 import 'floating_button.dart';
@@ -15,6 +16,8 @@ class MainContainer extends StatefulWidget {
 }
 
 class _MainContainerState extends State<MainContainer> {
+  var formKey = GlobalKey<FormState>();
+  var tweetContentController = TextEditingController();
 
   void _incrementCounter() {
       print('hello');
@@ -70,17 +73,26 @@ class _MainContainerState extends State<MainContainer> {
                       radius: 25,
                       //Rin : https://i.pinimg.com/736x/ab/75/af/ab75af0e6429d3b58af76f9333564c93.jpg
                       //Nadeshiko : https://preview.redd.it/despite-the-art-style-changed-nadeshiko-is-mega-cute-v0-ryv8wimm0avc1.jpeg?width=1080&crop=smart&auto=webp&s=84ab0d027219b4e73f47cbe76c80362c01eb65b4
-                      backgroundImage: NetworkImage("https://preview.redd.it/despite-the-art-style-changed-nadeshiko-is-mega-cute-v0-ryv8wimm0avc1.jpeg?width=1080&crop=smart&auto=webp&s=84ab0d027219b4e73f47cbe76c80362c01eb65b4")
+                      backgroundImage: NetworkImage(currentUserInfo?.profile_image_url)
                   ),
                   const SizedBox(width: 13),
-                  Expanded(
-                    child: Text(
-                      'What\'s Happening?',
-                      style: TextStyle(
-                        color: Theme.of(context).customTextColor2,
-                        fontSize: fontSize2,
-                        fontFamily: 'ABeeZee',
-                      ),
+                  Form(
+                    key: formKey,
+                    child:
+                    Expanded(
+                      child: TextFormField(
+                        controller: tweetContentController,
+                        validator: (val) =>
+                        val == "" ? "Please enter" : null,
+                        decoration: InputDecoration(
+                          border: InputBorder.none, hintText: 'What\'s Happening',
+                          hintStyle: TextStyle(
+                                color: Theme.of(context).customTextColor2,
+                                fontSize: fontSize2,
+                                fontFamily: 'ABeeZee',
+                              )
+                        ),
+                      )
                     ),
                   ),
                 ],

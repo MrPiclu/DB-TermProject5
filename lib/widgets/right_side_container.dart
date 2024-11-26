@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:contact1313/my_app.dart';
 import 'package:contact1313/theme/size.dart';
 import 'package:contact1313/theme/theme_data.dart';
@@ -5,8 +7,12 @@ import 'package:contact1313/widgets/text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../authentication/login.dart';
 import '../home_page.dart';
+import '../model/user.dart';
 import '../theme/colors.dart';
+import '../user/user_pref.dart';
+import 'circular_profile.dart';
 import 'floating_button.dart';
 import 'search_bar.dart';
 
@@ -15,10 +21,16 @@ class RightSideContainer extends StatefulWidget {
 
   @override
   State<RightSideContainer> createState() => _RightSideContainerState();
+
 }
 
 class _RightSideContainerState extends State<RightSideContainer> {
   bool _isLightMode = false;
+
+  @override
+  void initState(){
+    super.initState();
+  }
 
   void _redirectPage(String location) {
     context.go(location);
@@ -29,7 +41,8 @@ class _RightSideContainerState extends State<RightSideContainer> {
       MyApp.themeNotifier.value =
       _isLightMode ? ThemeMode.dark
           : ThemeMode.light;
-    }
+  }
+
 
 
   @override
@@ -73,25 +86,25 @@ class _RightSideContainerState extends State<RightSideContainer> {
           padding: EdgeInsets.all(14),
           child: Row(
             children: [
-              CircleAvatar(
-                  radius: 25,
-                  //Rin : https://i.pinimg.com/736x/ab/75/af/ab75af0e6429d3b58af76f9333564c93.jpg
-                  //Nadeshiko : https://preview.redd.it/despite-the-art-style-changed-nadeshiko-is-mega-cute-v0-ryv8wimm0avc1.jpeg?width=1080&crop=smart&auto=webp&s=84ab0d027219b4e73f47cbe76c80362c01eb65b4
-                  backgroundImage: NetworkImage("https://preview.redd.it/despite-the-art-style-changed-nadeshiko-is-mega-cute-v0-ryv8wimm0avc1.jpeg?width=1080&crop=smart&auto=webp&s=84ab0d027219b4e73f47cbe76c80362c01eb65b4")
+              CircularProfile(
+                onPressed: (){print('heo');},
+                radius: 25,
+                userInfo: currentUserInfo,
+                strokeRadius: 0,
               ),
               const SizedBox(width: 6),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Nadeshiko',
+                    currentUserInfo?.user_name ?? "Guest",
                     style: TextStyle(
                       color: Theme.of(context).customTextColor2,
                       fontSize: fontSize2,
                       fontFamily: 'ABeeZee',
                     ),
                   ),Text(
-                    '@Nada_Nade',
+                    '@${currentUserInfo?.user_id ?? "guest1"}',
                     style: TextStyle(
                       color: Theme.of(context).customTextColor2,
                       fontSize: fontSize2,
@@ -101,8 +114,16 @@ class _RightSideContainerState extends State<RightSideContainer> {
                 ],
 
               ),
-              const SizedBox(width: 18),
-              CustomTextButton(onPressed: _changeLightNightMode, colorVal: Theme.of(context).customIconColor2,width: 96, height: 24,text: "Change", fontSize: 13)
+              const Expanded(
+                child: SizedBox(),
+              ),
+              CustomTextButton(
+                  onPressed: _changeLightNightMode,
+                  colorVal: Theme.of(context).customIconBackgroundColor1,
+                  width: 96,
+                  height: 24,
+                  text: "Change",
+                  fontSize: 13)
 
             ],
           ),

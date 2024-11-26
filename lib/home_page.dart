@@ -1,6 +1,7 @@
 import 'package:contact1313/theme/colors.dart';
 import 'package:contact1313/theme/theme_data.dart';
 import 'package:contact1313/widgets/main_container.dart';
+import 'package:contact1313/widgets/profile_container.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'my_app.dart';
@@ -30,7 +31,7 @@ class _MyHomePageState extends State<MyHomePage> {
               children: <Widget>[
                 const CustomContainer(),
                 Container(width: 1,height: double.infinity, color: Theme.of(context).dividerColor),
-                const MainContainer(),
+                const ProfileContainer(),
                 Container(width: 1,height: double.infinity, color: Theme.of(context).dividerColor),
               ],
             ),

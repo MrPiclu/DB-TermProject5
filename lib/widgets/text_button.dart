@@ -4,22 +4,24 @@ import 'package:flutter/material.dart';
 
 class CustomTextButton extends StatelessWidget {
   final VoidCallback onPressed;
-  final Color colorVal;
+  Color? colorVal;
   final double fontSize;
-  final double width;
-  final double height;
+  double? width;
+  double? height;
   final String text;
+  BoxDecoration? boxDecoration;
 
-  const CustomTextButton({super.key, required this.onPressed, required this.colorVal, required this.width, required this.height, required this.text, required this.fontSize});
+  CustomTextButton({super.key, required this.onPressed, this.colorVal, this.width, this.height, required this.text, required this.fontSize, this.boxDecoration});
 
   @override
   Widget build(BuildContext context) {
     return Container(
         decoration:
-          BoxDecoration(
+            boxDecoration ?? BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            color: Theme.of(context).customBackgroundColor2,
+            color: colorVal ?? Theme.of(context).customBackgroundColor2,
           ),
+        width: width,
         height: height,
         child: TextButton(
           onPressed: () => onPressed,

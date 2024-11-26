@@ -1,19 +1,25 @@
 import 'dart:ui';
 import 'package:contact1313/main_screen.dart';
+import 'package:contact1313/user/user_pref.dart';
 import 'package:contact1313/widgets/bookmark_container.dart';
 import 'package:contact1313/widgets/main_container.dart';
+import 'package:contact1313/widgets/profile_container.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:contact1313/theme/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'bookmark_page.dart';
 import 'home_page.dart';
+import 'model/user.dart';
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   static ValueNotifier<ThemeMode> themeNotifier =
       ValueNotifier(ThemeMode.light);
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -45,10 +51,14 @@ final GoRouter _router = GoRouter(
           path: "/home",
           pageBuilder: (context, state) => const NoTransitionPage(child: MainContainer()),
         ),
-        GoRoute(
-          path: "/bookmark",
-          pageBuilder: (context, state) => const NoTransitionPage(child: BookmarkContainer()),
-        ),
+          GoRoute(
+            path: "/bookmark",
+            pageBuilder: (context, state) => const NoTransitionPage(child: BookmarkContainer()),
+          ),
+          GoRoute(
+            path: "/profile",
+            pageBuilder: (context, state) => const NoTransitionPage(child: ProfileContainer()),
+          ),
     ]
     )
   ]

@@ -3,8 +3,10 @@ import 'package:contact1313/theme/size.dart';
 import 'package:contact1313/theme/theme_data.dart';
 import 'package:flutter/material.dart';
 
+import '../authentication/login.dart';
 import '../theme/colors.dart';
 import 'async/async_img.dart';
+import 'circular_profile.dart';
 import 'floating_button.dart';
 import 'reaction_button.dart';
 
@@ -60,10 +62,13 @@ class _tweetContainerState extends State<tweetContainer> {
                     Container(
                       padding: EdgeInsets.all(6),
                       child:
-                          const InkWell(
-                            child: CircleAvatar(
-                                radius: 25,
-                                backgroundImage: NetworkImage("https://static.animecorner.me/2021/01/Yuru-Camp-1-3.jpg")
+                          InkWell(
+                            child:
+                            CircularProfile(
+                              onPressed: (){print('heo');},
+                              radius: 25,
+                              userInfo: currentUserInfo,
+                              strokeRadius: 0,
                             ),
                           ),
                     ),
@@ -75,9 +80,9 @@ class _tweetContainerState extends State<tweetContainer> {
                           children: [
                             Row(
                                 children: [
-                                  Text('Rin Shima', style: TextStyle(color: Theme.of(context).customTextColor1, fontSize: fontSize4)),
+                                  Text(currentUserInfo?.user_name ?? 'Guest2', style: TextStyle(color: Theme.of(context).customTextColor1, fontSize: fontSize4)),
                                   SizedBox(width: 8),
-                                  Text('@Shima_Ring', style: TextStyle(color: Theme.of(context).customTextColor2, fontSize: fontSize4)),
+                                  Text('@${currentUserInfo?.user_name ?? 'Guest2'}', style: TextStyle(color: Theme.of(context).customTextColor2, fontSize: fontSize2)),
                                   Expanded(child: SizedBox()),
                                   Text('16, Nov', style: TextStyle(color: Theme.of(context).customTextColor2, fontSize: fontSize4)),
                                 ]
