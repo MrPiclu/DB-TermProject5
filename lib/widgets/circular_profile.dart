@@ -6,7 +6,7 @@ class CircularProfile extends StatefulWidget {
   final VoidCallback onPressed;
   final double radius;
   final double strokeRadius;
-  final User? userInfo;
+  final User userInfo;
 
   const CircularProfile({
     super.key,
@@ -45,7 +45,7 @@ class _CircularProfileState extends State<CircularProfile> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               image: DecorationImage(
-                image: NetworkImage(widget.userInfo?.profile_image_url ?? ''),
+                image: NetworkImage(widget.userInfo.profile_image_url),
                 fit: BoxFit.cover,
                 opacity: _isHovering ? 0.45 : 1
               ),

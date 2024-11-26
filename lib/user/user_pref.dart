@@ -7,13 +7,9 @@ class RememberUser{
   static const String _userKey = "currentUser"; // 저장할 키 이름
 
   static Future<void> saveRememberUserInfo(User userInfo) async{
-    print('1');
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    print('1');
     String userJsonData = jsonEncode(userInfo.toJson());
-    print('1');
     await preferences.setString(_userKey, userJsonData);
-    print('1');
   }
 
   // 유저 정보 불러오기 메서드

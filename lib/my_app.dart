@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:contact1313/authentication/login.dart';
 import 'package:contact1313/main_screen.dart';
 import 'package:contact1313/user/user_pref.dart';
 import 'package:contact1313/widgets/bookmark_container.dart';
@@ -58,6 +59,10 @@ final GoRouter _router = GoRouter(
           GoRoute(
             path: "/profile",
             pageBuilder: (context, state) => const NoTransitionPage(child: ProfileContainer()),
+          ),
+          GoRoute(
+            path: "/login",
+            pageBuilder: (context, state) => const NoTransitionPage(child: LoginPage()),
           ),
     ]
     )

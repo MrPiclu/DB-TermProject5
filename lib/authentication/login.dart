@@ -6,15 +6,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:contact1313/authentication/signup.dart';
 
 import 'package:http/http.dart' as http;
-import 'package:fluttertoast/fluttertoast.dart';
 
 import '../api/api.dart';
 import '../my_app.dart';
 import '../model/user.dart';
 import '../user/user_pref.dart';
-import '../widgets/right_side_container.dart';
 
-User? currentUserInfo; // 전역 변수 선언
+User currentUserInfo = RememberUser.getRememberUserInfo() as User; // 전역 변수 선언
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -30,13 +28,10 @@ class _LoginPageState extends State<LoginPage> {
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
 
-
   Future<User?> _loadCurrentUserInfo() async{
     User? savedUserInfo = await RememberUser.getRememberUserInfo();
     // 유저 정보 불러오기
     if (savedUserInfo != null) {
-      print("User ID: ${savedUserInfo.user_id}");
-      print("User Name: ${savedUserInfo.user_name}");
       setState(() {
         currentUserInfo = savedUserInfo;
       });

@@ -4,6 +4,7 @@ import 'package:contact1313/theme/theme_data.dart';
 import 'package:flutter/material.dart';
 
 import '../authentication/login.dart';
+import '../model/tweet.dart';
 import '../theme/colors.dart';
 import 'async/async_img.dart';
 import 'circular_profile.dart';
@@ -11,8 +12,13 @@ import 'floating_button.dart';
 import 'reaction_button.dart';
 
 class tweetContainer extends StatefulWidget {
-  const tweetContainer({super.key});
 
+  final Tweet tweet;
+
+  const tweetContainer({
+    super.key,
+    required this.tweet
+  });
   @override
   State<tweetContainer> createState() => _tweetContainerState();
 }
@@ -80,9 +86,9 @@ class _tweetContainerState extends State<tweetContainer> {
                           children: [
                             Row(
                                 children: [
-                                  Text(currentUserInfo?.user_name ?? 'Guest2', style: TextStyle(color: Theme.of(context).customTextColor1, fontSize: fontSize4)),
+                                  Text(currentUserInfo.user_name ?? 'Guest2', style: TextStyle(color: Theme.of(context).customTextColor1, fontSize: fontSize4)),
                                   SizedBox(width: 8),
-                                  Text('@${currentUserInfo?.user_name ?? 'Guest2'}', style: TextStyle(color: Theme.of(context).customTextColor2, fontSize: fontSize2)),
+                                  Text('@${currentUserInfo.user_name ?? 'Guest2'}', style: TextStyle(color: Theme.of(context).customTextColor2, fontSize: fontSize2)),
                                   Expanded(child: SizedBox()),
                                   Text('16, Nov', style: TextStyle(color: Theme.of(context).customTextColor2, fontSize: fontSize4)),
                                 ]
@@ -98,8 +104,8 @@ class _tweetContainerState extends State<tweetContainer> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('What a great View !! #camping', style: TextStyle(color: Theme.of(context).customTextColor2, fontSize: fontSize2),),
-                                    SizedBox(height: 8),
+                                    Text(widget.tweet.body, style: TextStyle(color: Theme.of(context).customTextColor2, fontSize: fontSize2),),
+                                    const SizedBox(height: 8),
                                     const AsyncDynamicHeightContainer(
                                       key: ValueKey('unique_key'),
                                       imgUrl: "https://static.animecorner.me/2021/01/Yuru-Camp-1-6-1024x576.jpg"

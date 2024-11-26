@@ -1,49 +1,50 @@
 class User {
   int? user_uid;
-  String? user_id;
-  String? user_name;
-  var profile_image_url;
+  String user_id;
+  String user_name;
+  String profile_image_url;
   var user_number;
-  String? user_email;
+  String user_email;
   var created_at;
   var updated_at;
-  String? user_password;
+  String user_password;
 
-  User(this.user_uid,
-      this.user_id,
-      this.user_name,
-      this.profile_image_url,
-      this.user_number,
-      this.user_email,
-      this.created_at,
-      this.updated_at,
-      this.user_password,);
+  // 생성자에서 user_uid를 선택적으로 받음
+  User({
+    this.user_uid,
+    required this.user_id,
+    required this.user_name,
+    required this.profile_image_url,
+    this.user_number,
+    required this.user_email,
+    this.created_at,
+    this.updated_at,
+    required this.user_password,
+  });
 
-  factory User.fromJson(Map<String, dynamic> json) =>
-      User(
-        int.tryParse(json['user_uid']?.toString() ?? '0') ?? 0,
-        json['user_id'] ?? '',
-        json['user_name'] ?? '',
-        json['profile_image_url'] ?? '',
-        json['user_number'] ?? '',
-        json['user_email'] ?? '',
-        json['created_at'] ?? '',
-        json['updated_at'] ?? '',
-        json['user_password'] ?? '',
-      );
+  // JSON에서 객체 생성
+  factory User.fromJson(Map<String, dynamic> json) => User(
+    user_uid: int.parse(json['user_uid']) ?? 0, // 서버에서 받아온 user_uid
+    user_id: json['user_id'] ?? '',
+    user_name: json['user_name'] ?? '',
+    profile_image_url: json['profile_image_url'] ?? '',
+    user_number: json['user_number'] ?? '',
+    user_email: json['user_email'] ?? '',
+    created_at: json['created_at'] ?? '',
+    updated_at: json['updated_at'] ?? '',
+    user_password: json['user_password'] ?? '',
+  );
 
-  Map<String, dynamic> toJson() =>
-      {
-        'user_uid': user_id?.toString() ?? '',
-        // Convert to string or empty if null
-        'user_id': user_id ?? '',
-        'user_name': user_name ?? '',
-        // Use empty string if null
-        'profile_image_url': profile_image_url?.toString() ?? '',
-        'user_number': user_number?.toString() ?? '',
-        'user_email': user_email ?? '',
-        'created_at': created_at?.toString() ?? '',
-        'updated_at': updated_at?.toString() ?? '',
-        'user_password': user_password ?? '',
-      };
+  // 객체를 JSON으로 변환 (user_uid는 null일 수 있음)
+  Map<String, dynamic> toJson() => {
+    if (user_uid != null) 'user_uid': user_uid.toString(), // null이면 포함하지 않음
+    'user_id': user_id,
+    'user_name': user_name,
+    'profile_image_url': profile_image_url,
+    'user_number': user_number?.toString() ?? '',
+    'user_email': user_email,
+    'created_at': created_at?.toString() ?? '',
+    'updated_at': updated_at?.toString() ?? '',
+    'user_password': user_password,
+  };
 }

@@ -61,15 +61,12 @@ class _SignupPageState extends State<SignupPage> {
   saveInfo() async{
     print("1");
     User userModel = User(
-      1,
-      userIdController.text.trim(),
-      userNameController.text.trim(),
-      null,
-      null,
-      emailController.text.trim(),
-      null,
-      null,
-      passwordController.text.trim()
+      user_uid: null,
+      user_id: userIdController.text.trim(),
+      user_name: userNameController.text.trim(),
+      profile_image_url: "https://i2.ruliweb.com/img/21/02/20/177bdf6dd0b33948e.jpg",
+      user_email: emailController.text.trim(),
+      user_password: passwordController.text.trim()
     );
     print("2");
 

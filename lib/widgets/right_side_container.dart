@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:contact1313/my_app.dart';
 import 'package:contact1313/theme/size.dart';
 import 'package:contact1313/theme/theme_data.dart';
@@ -8,13 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../authentication/login.dart';
-import '../home_page.dart';
-import '../model/user.dart';
 import '../theme/colors.dart';
-import '../user/user_pref.dart';
 import 'circular_profile.dart';
-import 'floating_button.dart';
-import 'search_bar.dart';
 
 class RightSideContainer extends StatefulWidget {
   const RightSideContainer({super.key});
@@ -87,7 +80,7 @@ class _RightSideContainerState extends State<RightSideContainer> {
           child: Row(
             children: [
               CircularProfile(
-                onPressed: (){print('heo');},
+                onPressed: (){_redirectPage("/profile");},
                 radius: 25,
                 userInfo: currentUserInfo,
                 strokeRadius: 0,
@@ -118,7 +111,7 @@ class _RightSideContainerState extends State<RightSideContainer> {
                 child: SizedBox(),
               ),
               CustomTextButton(
-                  onPressed: _changeLightNightMode,
+                  onPressed: (){_redirectPage("/profile");},
                   colorVal: Theme.of(context).customIconBackgroundColor1,
                   width: 96,
                   height: 24,

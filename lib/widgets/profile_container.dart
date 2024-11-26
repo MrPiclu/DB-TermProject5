@@ -1,15 +1,28 @@
+import 'dart:convert';
+
 import 'package:contact1313/home_page.dart';
 import 'package:contact1313/theme/size.dart';
 import 'package:contact1313/theme/theme_data.dart';
+import 'package:contact1313/tweet/tweet_pref.dart';
 import 'package:contact1313/widgets/text_button.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:go_router/go_router.dart';
 
+import '../api/api.dart';
 import '../authentication/login.dart';
+import '../main.dart';
+import '../model/tweet.dart';
+import '../model/user.dart';
+import '../user/user_pref.dart';
 import 'circular_profile.dart';
 import 'tweet_container.dart';
 import '../theme/colors.dart';
 import 'floating_button.dart';
+import 'package:http/http.dart' as http;
+
+List<Tweet> tweets = [];
 
 class ProfileContainer extends StatefulWidget {
   const ProfileContainer({super.key});
@@ -19,6 +32,31 @@ class ProfileContainer extends StatefulWidget {
 }
 
 class _ProfileContainerState extends State<ProfileContainer> {
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fetchUserTweets();
+  }
+
+  Future<void> fetchUserTweets() async {
+    try {
+      print('yes1');
+      List<Tweet> fetchedTweets = await RememberTweet.loadTweets(currentUserInfo.user_uid ?? -5);
+      print('yes');
+      setState(() {
+        tweets = fetchedTweets; // 가져온 데이터를 상태에 저장
+        isLoading = false; // 로딩 상태 변경
+      });
+    } catch (e) {
+      print('Error fetching tweets: $e');
+      setState(() {
+        isLoading = false; // 로딩 상태 변경
+      });
+    }
+  }
 
   void _redirectPage(String location) {
     context.go(location);
@@ -41,12 +79,12 @@ class _ProfileContainerState extends State<ProfileContainer> {
           height: MediaQuery.of(context).size.height - 64,
           child:
               ListView.builder(
-                itemCount: 7, //프로필과 실선(경계선) + 트윗 수
+                itemCount: tweets.length + 2, //프로필과 실선(경계선) + 트윗 수
                   itemBuilder: (BuildContext ctx, int idx){
                     return idx == 0
                         ? _buildProfileSection()
                         : idx == 1 ? _buildSolidLine(1.0)
-                          : tweetContainer();
+                          : tweetContainer(tweet: tweets[idx - 2],);
                   }
 
               )
@@ -179,7 +217,7 @@ class _ProfileContainerState extends State<ProfileContainer> {
                       height: 15,
                     ),
                     Text(
-                      "Sculpting Models",
+                      tweets[0].body,
                       style: TextStyle(
                         color: Theme.of(context).customTextColor1,
                         fontSize: fontSize2,

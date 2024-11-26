@@ -30,7 +30,6 @@ class _BookmarkContainerState extends State<BookmarkContainer> {
         children: [
           _buildMainUploadSection(context),
           _buildSolidLine(1.0),
-          tweetContainer(),
         ],
       ),
     );
