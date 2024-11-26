@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:contact1313/home_page.dart';
 import 'package:contact1313/theme/size.dart';
 import 'package:contact1313/theme/theme_data.dart';
+import 'package:contact1313/tweet/media_pref.dart';
 import 'package:contact1313/tweet/tweet_pref.dart';
 import 'package:contact1313/widgets/text_button.dart';
 import 'package:flutter/material.dart';
@@ -43,9 +44,7 @@ class _ProfileContainerState extends State<ProfileContainer> {
 
   Future<void> fetchUserTweets() async {
     try {
-      print('yes1');
       List<Tweet> fetchedTweets = await RememberTweet.loadTweets(currentUserInfo.user_uid ?? -5);
-      print('yes');
       setState(() {
         tweets = fetchedTweets; // 가져온 데이터를 상태에 저장
         isLoading = false; // 로딩 상태 변경
@@ -84,7 +83,7 @@ class _ProfileContainerState extends State<ProfileContainer> {
                     return idx == 0
                         ? _buildProfileSection()
                         : idx == 1 ? _buildSolidLine(1.0)
-                          : tweetContainer(tweet: tweets[idx - 2],);
+                          : tweetContainer(tweet: tweets[idx - 2]);
                   }
 
               )

@@ -1,15 +1,20 @@
 import 'package:contact1313/home_page.dart';
 import 'package:contact1313/theme/size.dart';
 import 'package:contact1313/theme/theme_data.dart';
+import 'package:contact1313/tweet/media_pref.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../authentication/login.dart';
+import '../model/media.dart';
 import '../model/tweet.dart';
 import '../theme/colors.dart';
 import 'async/async_img.dart';
 import 'circular_profile.dart';
 import 'floating_button.dart';
 import 'reaction_button.dart';
+
+Media? medias;
 
 class tweetContainer extends StatefulWidget {
 
@@ -24,9 +29,41 @@ class tweetContainer extends StatefulWidget {
 }
 
 class _tweetContainerState extends State<tweetContainer> {
+  DateTime parsedData = DateTime(2023);
+  bool isLoading = true;
+
+   @override
+  void initState() {
+    // TODO: implement initState
+     _convertDate();
+     _loadMedias();
+  }
 
   void _incrementCounter() {
       print('hello');
+  }
+
+  void _convertDate(){
+    parsedData = DateTime.parse(widget.tweet.created_at);
+  }
+
+  Future<void> _loadMedias() async {
+    try {
+      print('yes1');
+      Media? fetchedMedias = await LoadTweetMedias.loadMedia(widget.tweet.id ?? -5);
+      print('endend');
+      setState(() {
+        medias = fetchedMedias; // 가져온 데이터를 상태에 저장
+        print(widget.tweet.body);
+        print(medias?.mediaUrl);
+        isLoading = false; // 로딩 상태 변경
+      });
+    } catch (e) {
+      print('Error fetching tweets: $e');
+      setState(() {
+        isLoading = false; // 로딩 상태 변경
+      });
+    }
   }
 
   @override
@@ -34,6 +71,8 @@ class _tweetContainerState extends State<tweetContainer> {
     return InkWell(
       onTap: () {
         print('hel11lo');
+        print(widget.tweet.created_at.runtimeType);
+        print(widget.tweet.created_at);
       },
       splashColor: Colors.transparent, // 물결 효과 제거
       highlightColor: Colors.transparent, // 강조 효과 제거
@@ -71,7 +110,7 @@ class _tweetContainerState extends State<tweetContainer> {
                           InkWell(
                             child:
                             CircularProfile(
-                              onPressed: (){print('heo');},
+                              onPressed: (){print('he1o');},
                               radius: 25,
                               userInfo: currentUserInfo,
                               strokeRadius: 0,
@@ -90,7 +129,7 @@ class _tweetContainerState extends State<tweetContainer> {
                                   SizedBox(width: 8),
                                   Text('@${currentUserInfo.user_name ?? 'Guest2'}', style: TextStyle(color: Theme.of(context).customTextColor2, fontSize: fontSize2)),
                                   Expanded(child: SizedBox()),
-                                  Text('16, Nov', style: TextStyle(color: Theme.of(context).customTextColor2, fontSize: fontSize4)),
+                                  Text('${DateFormat("dd, MMM").format(parsedData)}', style: TextStyle(color: Theme.of(context).customTextColor2, fontSize: fontSize4)),
                                 ]
                             ),
                             SizedBox(height: 10),
@@ -106,10 +145,11 @@ class _tweetContainerState extends State<tweetContainer> {
                                   children: [
                                     Text(widget.tweet.body, style: TextStyle(color: Theme.of(context).customTextColor2, fontSize: fontSize2),),
                                     const SizedBox(height: 8),
-                                    const AsyncDynamicHeightContainer(
-                                      key: ValueKey('unique_key'),
-                                      imgUrl: "https://static.animecorner.me/2021/01/Yuru-Camp-1-6-1024x576.jpg"
-                                    ),
+                                    AsyncDynamicHeightContainer(
+                                      key: ValueKey(medias?.mediaUrl ?? 'default_key'),
+                                      imgUrl: medias!.mediaUrl,
+                                    )
+
 
                                   ],
                                 ),

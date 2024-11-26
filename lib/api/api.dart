@@ -7,4 +7,5 @@ class API{
   static const validateEmail = "$hostConnect/user/validate_email.php";
   static const uploadTweet = "$hostConnect/user/upload_tweet.php";
   static const downloadTweet = "$hostConnect/user/download_tweet.php";
+  static const downloadTweetMedia = "$hostConnect/user/download_tweet_media.php";
 }

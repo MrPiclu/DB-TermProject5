@@ -13,7 +13,6 @@ class AsyncDynamicHeightContainer extends StatefulWidget {
 class AsyncDynamicHeightContainerState extends State<AsyncDynamicHeightContainer> {
   get url => widget.imgUrl;
 
-
   Future<Size> getImageSize(url) async {
     final Completer<Size> completer = Completer();
 
