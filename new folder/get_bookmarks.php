@@ -2,12 +2,13 @@
 session_start();
 require 'db_connection.php';
 
-$userId = $_SESSION['user_id'] ?? null;
-
-if (!$userId) {
+// 로그인 상태 확인
+if (!isset($_SESSION['user_id'])) {
     echo "You must log in to view bookmarks.";
     exit;
 }
+
+$userId = $_SESSION['user_id'];
 
 $query = "SELECT bookmark_title, bookmark_url FROM bookmarks WHERE user_id = :user_id";
 $stmt = $pdo->prepare($query);
