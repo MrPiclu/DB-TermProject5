@@ -4,6 +4,7 @@ import 'package:contact1313/widgets/main_container.dart';
 import 'package:contact1313/widgets/profile_container.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'authentication/login.dart';
 import 'my_app.dart';
 import 'widgets/bookmark_container.dart';
 import 'widgets/custom_container.dart';
@@ -31,7 +32,7 @@ class _MyHomePageState extends State<MyHomePage> {
               children: <Widget>[
                 const CustomContainer(),
                 Container(width: 1,height: double.infinity, color: Theme.of(context).dividerColor),
-                const ProfileContainer(),
+                ProfileContainer(userUid: currentUserInfo.user_uid!),
                 Container(width: 1,height: double.infinity, color: Theme.of(context).dividerColor),
               ],
             ),

@@ -68,11 +68,13 @@ class AsyncDynamicHeightContainerState extends State<AsyncDynamicHeightContainer
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
-                            image: DecorationImage(
-                              image: NetworkImage(url),
-                              fit: BoxFit.cover,
-                            ),
+                            // image: DecorationImage(
+                            //   image: NetworkImage(url),
+                            //   fit: BoxFit.cover,
+                            // ),
                           ),
+                          child: Image.network(url, fit: BoxFit.fitHeight,),
+
                         ),
                       ),
                 ),

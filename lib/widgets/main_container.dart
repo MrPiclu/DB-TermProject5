@@ -4,16 +4,20 @@ import 'package:contact1313/home_page.dart';
 import 'package:contact1313/theme/size.dart';
 import 'package:contact1313/theme/theme_data.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 
 import '../api/api.dart';
 import '../authentication/login.dart';
 import '../model/tweet.dart';
 import '../model/user.dart';
+import '../tweet/tweet_pref.dart';
 import 'circular_profile.dart';
 import 'tweet_container.dart';
 import '../theme/colors.dart';
 import 'floating_button.dart';
+
+List<Tweet> tweets = [];
 
 class MainContainer extends StatefulWidget {
   const MainContainer({super.key});
@@ -26,10 +30,20 @@ class _MainContainerState extends State<MainContainer> {
   var formKey = GlobalKey<FormState>();
   var tweetContentController = TextEditingController();
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fetchUserTweets();
+  }
+
   void _incrementCounter() {
       print('hello');
   }
 
+  void _redirectPage(String location) {
+    context.go(location);
+  }
   _uploadTweet() async{
     try{
       print("3");
@@ -70,6 +84,20 @@ class _MainContainerState extends State<MainContainer> {
     }
 
   }
+
+  Future<void> fetchUserTweets() async {
+    try {
+      List<Tweet> fetchedTweets = await RememberTweet.loadTweets(14);
+      setState(() {
+        tweets = fetchedTweets; // 가져온 데이터를 상태에 저장
+      });
+    } catch (e) {
+      print('Error fetching tweets: $e');
+      setState(() {
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -79,6 +107,7 @@ class _MainContainerState extends State<MainContainer> {
         children: [
           _buildMainUploadSection(context),
           _buildSolidLine(1.0),
+          tweetContainer(tweet: tweets[1]),
         ],
       ),
     );
@@ -111,7 +140,8 @@ class _MainContainerState extends State<MainContainer> {
               padding: EdgeInsets.all(8),
               child:
               Row(
-                children: [CircularProfile(onPressed: (){}, strokeRadius: 0, radius: 25, userInfo: currentUserInfo,),
+                children: [
+                  CircularProfile(onPressed: (){_redirectPage("/${currentUserInfo.user_uid}/profile");}, strokeRadius: 0, radius: 25, userInfo: currentUserInfo,),
                   const SizedBox(width: 13),
                   Form(
                     key: formKey,

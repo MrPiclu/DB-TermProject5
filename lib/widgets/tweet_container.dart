@@ -1,13 +1,19 @@
+import 'dart:convert';
+
 import 'package:contact1313/home_page.dart';
 import 'package:contact1313/theme/size.dart';
 import 'package:contact1313/theme/theme_data.dart';
 import 'package:contact1313/tweet/media_pref.dart';
+import 'package:contact1313/tweet/tweet_pref.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../api/api.dart';
 import '../authentication/login.dart';
 import '../model/media.dart';
 import '../model/tweet.dart';
+import '../model/user.dart';
 import '../theme/colors.dart';
 import 'async/async_img.dart';
 import 'circular_profile.dart';
@@ -15,6 +21,7 @@ import 'floating_button.dart';
 import 'reaction_button.dart';
 
 Media? medias;
+User? userInfo;
 
 class tweetContainer extends StatefulWidget {
 
@@ -28,17 +35,23 @@ class tweetContainer extends StatefulWidget {
   State<tweetContainer> createState() => _tweetContainerState();
 }
 
-class _tweetContainerState extends State<tweetContainer> {
+class _tweetContainerState extends State<tweetContainer>{
   DateTime parsedData = DateTime(2023);
   bool isLoading = true;
 
    @override
   void initState() {
+     super.initState();
     // TODO: implement initState
-     _convertDate();
+     loadUserInfo();
      _loadMedias();
+     _convertDate();
   }
 
+
+  void _redirectPage(String location) {
+    context.go(location);
+  }
   void _incrementCounter() {
       print('hello');
   }
@@ -47,22 +60,34 @@ class _tweetContainerState extends State<tweetContainer> {
     parsedData = DateTime.parse(widget.tweet.created_at);
   }
 
+  Future<void> loadUserInfo() async{
+    try{
+      User? fetchedUser = await RememberTweet.loadUserInfo(widget.tweet.user_uid ?? -5);
+      if(mounted){
+        setState(() {
+          userInfo = fetchedUser; // 가져온 데이터를 상태에 저장
+          print(userInfo?.user_name);
+        });
+      }
+
+    }catch(e){
+      print(e.toString());
+    }
+  }
+
   Future<void> _loadMedias() async {
     try {
-      print('yes1');
       Media? fetchedMedias = await LoadTweetMedias.loadMedia(widget.tweet.id ?? -5);
-      print('endend');
-      setState(() {
-        medias = fetchedMedias; // 가져온 데이터를 상태에 저장
-        print(widget.tweet.body);
-        print(medias?.mediaUrl);
-        isLoading = false; // 로딩 상태 변경
-      });
+      if(mounted){
+        setState(() {
+          medias = fetchedMedias; // 가져온 데이터를 상태에 저장
+          // print(widget.tweet.body);
+          // print(medias?.mediaUrl);
+          isLoading = false; // 로딩 상태 변경
+        });
+      }
     } catch (e) {
       print('Error fetching tweets: $e');
-      setState(() {
-        isLoading = false; // 로딩 상태 변경
-      });
     }
   }
 
@@ -70,14 +95,13 @@ class _tweetContainerState extends State<tweetContainer> {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        print('hel11lo');
-        print(widget.tweet.created_at.runtimeType);
-        print(widget.tweet.created_at);
+        // print(widget.tweet.created_at.runtimeType);
+        // print(widget.tweet.created_at);
       },
       splashColor: Colors.transparent, // 물결 효과 제거
       highlightColor: Colors.transparent, // 강조 효과 제거
       onHover: (isHovering) {
-        print(isHovering ? 'Hovering' : 'Not Hovering'); // 디버깅용 출력
+        // print(isHovering ? 'Hovering' : 'Not Hovering'); // 디버깅용 출력
       },
       hoverColor: Theme.of(context).customBackgroundColor2, // 호버 시 색상 변경
       child: Ink(
@@ -110,9 +134,9 @@ class _tweetContainerState extends State<tweetContainer> {
                           InkWell(
                             child:
                             CircularProfile(
-                              onPressed: (){print('he1o');},
+                              onPressed: (){_redirectPage("/${userInfo?.user_uid}/profile");},
                               radius: 25,
-                              userInfo: currentUserInfo,
+                              userInfo: userInfo,
                               strokeRadius: 0,
                             ),
                           ),
@@ -125,9 +149,9 @@ class _tweetContainerState extends State<tweetContainer> {
                           children: [
                             Row(
                                 children: [
-                                  Text(currentUserInfo.user_name ?? 'Guest2', style: TextStyle(color: Theme.of(context).customTextColor1, fontSize: fontSize4)),
+                                  Text(userInfo?.user_name ?? 'Guest2', style: TextStyle(color: Theme.of(context).customTextColor1, fontSize: fontSize4)),
                                   SizedBox(width: 8),
-                                  Text('@${currentUserInfo.user_name ?? 'Guest2'}', style: TextStyle(color: Theme.of(context).customTextColor2, fontSize: fontSize2)),
+                                  Text('@${userInfo?.user_name ?? 'Guest2'}', style: TextStyle(color: Theme.of(context).customTextColor2, fontSize: fontSize2)),
                                   Expanded(child: SizedBox()),
                                   Text('${DateFormat("dd, MMM").format(parsedData)}', style: TextStyle(color: Theme.of(context).customTextColor2, fontSize: fontSize4)),
                                 ]
@@ -149,8 +173,6 @@ class _tweetContainerState extends State<tweetContainer> {
                                       key: ValueKey(medias?.mediaUrl ?? 'default_key'),
                                       imgUrl: medias!.mediaUrl,
                                     )
-
-
                                   ],
                                 ),
 
@@ -200,5 +222,6 @@ class _tweetContainerState extends State<tweetContainer> {
       color: Theme.of(context).dividerColor,
     );
   }
+
 
 }

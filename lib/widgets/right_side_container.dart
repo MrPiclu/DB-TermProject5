@@ -80,7 +80,7 @@ class _RightSideContainerState extends State<RightSideContainer> {
           child: Row(
             children: [
               CircularProfile(
-                onPressed: (){_redirectPage("/profile");},
+                onPressed: (){_redirectPage("/${currentUserInfo.user_uid}/profile");},
                 radius: 25,
                 userInfo: currentUserInfo,
                 strokeRadius: 0,
@@ -111,7 +111,7 @@ class _RightSideContainerState extends State<RightSideContainer> {
                 child: SizedBox(),
               ),
               CustomTextButton(
-                  onPressed: (){_redirectPage("/profile");},
+                  onPressed: (){_redirectPage("/6/profile");},
                   colorVal: Theme.of(context).customIconBackgroundColor1,
                   width: 96,
                   height: 24,

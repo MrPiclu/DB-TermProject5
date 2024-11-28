@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:ui';
 import 'package:contact1313/authentication/login.dart';
 import 'package:contact1313/main_screen.dart';
@@ -57,8 +58,11 @@ final GoRouter _router = GoRouter(
             pageBuilder: (context, state) => const NoTransitionPage(child: BookmarkContainer()),
           ),
           GoRoute(
-            path: "/profile",
-            pageBuilder: (context, state) => const NoTransitionPage(child: ProfileContainer()),
+            path: "/:userId/profile", // 동적 매개변수 userId를 앞에 배치
+            pageBuilder: (context, state) {
+              final userId = state.pathParameters['userId']; // userId 추출
+              return NoTransitionPage(child: ProfileContainer(userUid: int.parse(userId!)));
+            },
           ),
           GoRoute(
             path: "/login",
