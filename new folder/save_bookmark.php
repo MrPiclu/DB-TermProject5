@@ -2,15 +2,20 @@
 session_start();
 require 'db_connection.php';
 
+// 로그인 상태 확인
+if (!isset($_SESSION['user_id'])) {
+    die("You must log in to save bookmarks.");
+}
+
+// CSRF 토큰 확인
+if ($_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+    die("Invalid CSRF token.");
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $userId = $_SESSION['user_id'] ?? null; // 세션에서 사용자 ID 가져오기
+    $userId = $_SESSION['user_id']; 
     $title = $_POST['title'] ?? '';
     $url = $_POST['url'] ?? '';
-
-    if (!$userId) {
-        echo "You must log in to save bookmarks.";
-        exit;
-    }
 
     // 입력값 검증
     if (empty($title) || empty($url)) {
