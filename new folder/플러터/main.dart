@@ -23,12 +23,25 @@ class _BookmarkPageState extends State<BookmarkPage> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController urlController = TextEditingController();
   List<dynamic> bookmarks = [];
-  String csrfToken = "your_csrf_token_here"; // PHP 서버에서 제공한 CSRF 토큰을 사용해야 함
+  String csrfToken = '';
 
   @override
   void initState() {
     super.initState();
-    fetchBookmarks();
+    fetchCsrfTokenAndBookmarks();
+  }
+
+  // CSRF 토큰과 북마크 목록 가져오기
+  void fetchCsrfTokenAndBookmarks() async {
+    try {
+      final token = await apiService.fetchCsrfToken();
+      setState(() {
+        csrfToken = token;
+      });
+      fetchBookmarks();
+    } catch (e) {
+      print('Error: $e');
+    }
   }
 
   // 북마크 목록 가져오기
