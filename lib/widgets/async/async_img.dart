@@ -45,7 +45,11 @@ class AsyncDynamicHeightContainerState extends State<AsyncDynamicHeightContainer
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               // 이미지 로딩 중
-              return Center(child: CircularProgressIndicator());
+              return Container(
+                  child: Center(
+                      child: CircularProgressIndicator()
+                  )
+              );
             } else if (snapshot.hasError) {
               // 이미지 로드 실패
               return Center(child: Text("Failed to load image"));
@@ -73,7 +77,25 @@ class AsyncDynamicHeightContainerState extends State<AsyncDynamicHeightContainer
                             //   fit: BoxFit.cover,
                             // ),
                           ),
-                          child: Image.network(url, fit: BoxFit.fitHeight,),
+                          child: Image.network(url, fit: BoxFit.fitHeight, key: ValueKey(url),
+                            loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                              if (loadingProgress == null) {
+                                return child; // 이미지를 정상적으로 로드했을 때 표시
+                              }
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes != null
+                                      ? loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1)
+                                      : null, // 진행 상태를 표시
+                                ),
+                              );
+                            },
+                            errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                              return Center(
+                                child: Text('Image failed to load'),
+                              );
+                            },
+                          ),
 
                         ),
                       ),

@@ -43,6 +43,7 @@ dependencies:
   fluttertoast: ^8.2.8
   shared_preferences: ^2.3.3
   intl: ^0.17.0
+  cached_network_image: ^3.2.3
 
 dev_dependencies:
   flutter_test:

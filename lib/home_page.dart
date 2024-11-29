@@ -1,14 +1,8 @@
-import 'package:contact1313/theme/colors.dart';
 import 'package:contact1313/theme/theme_data.dart';
-import 'package:contact1313/widgets/main_container.dart';
 import 'package:contact1313/widgets/profile_container.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'authentication/login.dart';
-import 'my_app.dart';
-import 'widgets/bookmark_container.dart';
 import 'widgets/custom_container.dart';
-import 'widgets/floating_button.dart';
 
 
 class MyHomePage extends StatefulWidget {

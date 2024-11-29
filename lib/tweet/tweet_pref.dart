@@ -1,11 +1,10 @@
 import 'dart:convert';
 
+import 'package:contact1313/authentication/login.dart';
+
 import '../api/api.dart';
 import '../model/tweet.dart';
-import '../model/user.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 
 class RememberTweet{
   static const String _userKey = "currentUser"; // 저장할 키 이름
@@ -76,47 +75,60 @@ class RememberTweet{
     }
   }
 
-  static Future<User?> loadUserInfo(int userUid) async{
-    if (userUid == -5) {
+  static Future<Map<String, dynamic>> loadFavoriteInfo(int tweetId) async{
+    print("Load Following Info in User_pref");
+    if (tweetId == -5) {
       print('Invalid user_uid ID');
-      return null; // 잘못된 tweet_id 처리
+      return {
+        'userCount': 0,
+        'isFavorited': false,
+      }; // 잘못된 tweet_id 처리
     }
     try{
-      print("user uid is ${userUid}");
       var res = await http.post(
-        Uri.parse(API.getUserInfo),
+        Uri.parse(API.downloadFavTweet),
         body: {
-          'user_uid': userUid.toString(),
+          'tweet_id' : tweetId.toString(), // 팔로우를 건 사람
+          'user_uid' : currentUserInfo.user_uid.toString(),
         },
       );
-
-      print("go next");
 
       print(res.statusCode);
       print(res.body);
 
       if(res.statusCode == 200){
-        print("go next");
-        var resUserInfo = jsonDecode(res.body);
+        print("1");
+        final Map<String, dynamic> decoded = jsonDecode(res.body);
 
-        if(resUserInfo['success'] == true){
-          print("go next");
+        print("1");
+        if(decoded['success'] == true){
+          List<dynamic> usersJson = decoded['users'];
+          bool isFavorited = decoded['isFavorited'];
+          print("아이고난시");
+          print(usersJson.toString());
+          print(isFavorited.toString());
 
-          print("get user info success");
-          print(resUserInfo['userData']);
-          return User.fromJson(resUserInfo['userData']);
+            return {
+              'userCount' : usersJson.length,
+              'isFavorited' : isFavorited,
+            };
         }else{
-          print("Erorr ");
+          return {
+            'userCount' : 0,
+            'isFavorited' : false,
+          };
         }
       }
       print("5");
     }catch(e){
-      print('getUserInfo Catc14hed');
+      print('getFollowingUsers Catched');
       print(e.toString());
     }
-    return null;
+    return {
+      'userCount': 0,
+      'isFavorited': false,
+    };
   }
-
 
 }
 

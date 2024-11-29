@@ -1,8 +1,6 @@
 import 'dart:convert';
 import '../api/api.dart';
 import '../model/media.dart';
-import '../model/tweet.dart';
-import '../model/user.dart';
 import 'package:http/http.dart' as http;
 
 class LoadTweetMedias {

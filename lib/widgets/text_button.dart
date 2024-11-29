@@ -24,7 +24,6 @@ class _CustomTextButtonState extends State<CustomTextButton> {
     return Container(
         decoration:
             widget.boxDecoration ?? BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
             color: widget.colorVal ?? Theme.of(context).customBackgroundColor2,
           ),
         width: widget.width,

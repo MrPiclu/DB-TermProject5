@@ -35,6 +35,7 @@ class _MainContainerState extends State<MainContainer> {
     // TODO: implement initState
     super.initState();
     fetchUserTweets();
+    print("yess!!");
   }
 
   void _incrementCounter() {
@@ -44,6 +45,7 @@ class _MainContainerState extends State<MainContainer> {
   void _redirectPage(String location) {
     context.go(location);
   }
+
   _uploadTweet() async{
     try{
       print("3");
@@ -108,6 +110,7 @@ class _MainContainerState extends State<MainContainer> {
           _buildMainUploadSection(context),
           _buildSolidLine(1.0),
           tweetContainer(tweet: tweets[1]),
+          tweetContainer(tweet: tweets[0]),
         ],
       ),
     );
@@ -141,7 +144,15 @@ class _MainContainerState extends State<MainContainer> {
               child:
               Row(
                 children: [
-                  CircularProfile(onPressed: (){_redirectPage("/${currentUserInfo.user_uid}/profile");}, strokeRadius: 0, radius: 25, userInfo: currentUserInfo,),
+                  CircularProfile(onPressed: (){
+                    _redirectPage(
+                        "/${currentUserInfo.user_uid}/profile");
+                    dispose();
+                    },
+                    strokeRadius: 0,
+                    radius: 25,
+                    userInfo: currentUserInfo,
+                  ),
                   const SizedBox(width: 13),
                   Form(
                     key: formKey,

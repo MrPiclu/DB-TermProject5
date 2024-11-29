@@ -110,13 +110,17 @@ class _RightSideContainerState extends State<RightSideContainer> {
               const Expanded(
                 child: SizedBox(),
               ),
-              CustomTextButton(
-                  onPressed: (){_redirectPage("/6/profile");},
-                  colorVal: Theme.of(context).customIconBackgroundColor1,
-                  width: 96,
-                  height: 24,
-                  text: "Change",
-                  fontSize: 13)
+              // CustomTextButton(
+              //     onPressed: (){_redirectPage("/login");},
+              //     colorVal: Theme.of(context).customIconBackgroundColor1,
+              //     width: 96,
+              //     height: 24,
+              //     text: "Change",
+              //     boxDecoration: BoxDecoration(
+              //       borderRadius: BorderRadius.circular(12),
+              //       color: Theme.of(context).customIconBackgroundColor1,
+              //     ),
+              //     fontSize: 13),
 
             ],
           ),

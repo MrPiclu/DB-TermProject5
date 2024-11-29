@@ -1,18 +1,14 @@
-import 'dart:ffi';
 import 'dart:ui';
 import 'package:contact1313/authentication/login.dart';
 import 'package:contact1313/main_screen.dart';
-import 'package:contact1313/user/user_pref.dart';
 import 'package:contact1313/widgets/bookmark_container.dart';
+import 'package:contact1313/widgets/follower_info_container.dart';
+import 'package:contact1313/widgets/following_info_container.dart';
 import 'package:contact1313/widgets/main_container.dart';
 import 'package:contact1313/widgets/profile_container.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:contact1313/theme/theme_data.dart';
 import 'package:flutter/material.dart';
-import 'bookmark_page.dart';
-import 'home_page.dart';
-import 'model/user.dart';
 
 
 class MyApp extends StatelessWidget {
@@ -44,6 +40,10 @@ class MyApp extends StatelessWidget {
 final GoRouter _router = GoRouter(
   initialLocation: "/home",
   routes: [
+    GoRoute(
+      path: "/login",
+      pageBuilder: (context, state) => const NoTransitionPage(child: MyApp()),
+    ),
     ShellRoute(
         builder: (context, state, child){
           return MainScreen(child: child);
@@ -65,8 +65,18 @@ final GoRouter _router = GoRouter(
             },
           ),
           GoRoute(
-            path: "/login",
-            pageBuilder: (context, state) => const NoTransitionPage(child: LoginPage()),
+            path: "/:userId/following", // 동적 매개변수 userId를 앞에 배치
+            pageBuilder: (context, state) {
+              final userId = state.pathParameters['userId']; // userId 추출
+              return NoTransitionPage(child: FollowingInfoContainer(userUid: int.parse(userId!)));
+            },
+          ),
+          GoRoute(
+            path: "/:userId/followers", // 동적 매개변수 userId를 앞에 배치
+            pageBuilder: (context, state) {
+              final userId = state.pathParameters['userId']; // userId 추출
+              return NoTransitionPage(child: FollowerInfoContainer(userUid: int.parse(userId!)));
+            },
           ),
     ]
     )

@@ -24,6 +24,9 @@ extension CustomTheme on ThemeData {
   Color get customIconColor2 => brightness == Brightness.dark
       ? iconColor2// 다크 모드 색상
       : wiconColor2;  // 라이트 모드 색상
+
+  Color get customIconHighlightedColor3 => Colors.redAccent; // 다크 모드 색상
+
   Color get customIconInvertColor1 => brightness == Brightness.dark
       ? wiconColor1// 다크 모드 색상
       : iconColor1;  // 라이트 모드 색상

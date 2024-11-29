@@ -12,7 +12,13 @@ class API{
   static const uploadTweet = "$hostConnect/user/upload_tweet.php";
   static const downloadTweets = "$hostConnect/user/download_tweet.php";
   static const downloadTweetMedia = "$hostConnect/user/download_tweet_media.php";
+  static const getFollowingUsers = "$hostConnect/user/get_following_users.php";
 
   static const follow = "$hostConnect/user/follow.php";
   static const unFollow = "$hostConnect/user/unfollow.php";
+
+  static const favTweet = "$hostConnect/user/fav_tweet.php";
+  static const updateFavTweet = "$hostConnect/user/update_fav_tweet.php";
+  static const downloadFavTweet = "$hostConnect/user/download_fav_tweet.php";
+
 }

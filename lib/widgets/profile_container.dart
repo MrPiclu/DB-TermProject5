@@ -14,11 +14,13 @@ import 'package:go_router/go_router.dart';
 import '../api/api.dart';
 import '../authentication/login.dart';
 import '../main.dart';
+import '../model/followUser.dart';
 import '../model/tweet.dart';
 import '../model/user.dart';
 import '../tweet/user_pref.dart';
 import '../user/user_pref.dart';
 import 'circular_profile.dart';
+import 'following_info_container.dart';
 import 'tweet_container.dart';
 import '../theme/colors.dart';
 import 'floating_button.dart';
@@ -26,7 +28,6 @@ import 'package:http/http.dart' as http;
 
 List<Tweet> tweets = [];
 User? userInfo;
-bool isFollowing = false;
 
 class ProfileContainer extends StatefulWidget {
   final  int userUid;
@@ -38,18 +39,37 @@ class ProfileContainer extends StatefulWidget {
 
 class _ProfileContainerState extends State<ProfileContainer> {
   bool isLoading = true;
+  bool isFollowing = false;
+  int follower = 0;
+  int following = 0;
   @override
+
+  var formKey = GlobalKey<FormState>();
+  var userNameController = TextEditingController();
+  var userIdController = TextEditingController();
+
+  bool isInEditMode = false;
+
   void initState() {
-    // TODO: implement initState
     super.initState();
-    fetchUserTweets();
-    loadUserInfo();
-    loadFollowInfo();
+    // TODO: implement initState\
+    loadAllData();
+  }
+
+  Future<void> loadAllData() async {
+    await loadFollowInfo();   // 세 번째 함수 실행
+    await fetchUserTweets();  // 첫 번째 함수 완료 후
+    await loadUserInfo();
+    await _loadFollowCount();
   }
 
   Future<void> loadUserInfo() async{
+    print("Entered load user info in profile container");
     try{
+      print("1");
       User? fetchedUser = await LoadUserInfo.loadUserInfo(widget.userUid ?? -5);
+      print("2");
+      if(!mounted) return;
       setState(() {
         userInfo = fetchedUser; // 가져온 데이터를 상태에 저장
       });
@@ -59,9 +79,10 @@ class _ProfileContainerState extends State<ProfileContainer> {
   }
 
   Future<void> fetchUserTweets() async {
-    print("Entered in fetch User Tweets");
+    print("Entered in fetch User Tweets in profile_container");
     try {
       List<Tweet> fetchedTweets = await RememberTweet.loadTweets(widget.userUid ?? -5);
+      if(!mounted) return;
       setState(() {
         tweets = fetchedTweets; // 가져온 데이터를 상태에 저장
         isLoading = false; // 로딩 상태 변경
@@ -75,17 +96,18 @@ class _ProfileContainerState extends State<ProfileContainer> {
 
   Future<void> loadFollowInfo() async{
     try{
-      bool fetchedFollowingInfo = await LoadUserInfo.loadFollowInfo(widget.userUid ?? -5);
       print("Loading Follow Info....");
-      setState(() {
-        isFollowing = fetchedFollowingInfo; // 가져온 데이터를 상태에 저장
+      if(!mounted) return;
+      setState(() async {
+        bool fetchedFollowingInfo = await LoadUserInfo.loadFollowInfo(widget.userUid ?? -5);
+        isFollowing = fetchedFollowingInfo;
         print("|||${isFollowing}");
+        isLoading = false;
       });
     }catch(e){
       print(e.toString());
     }
   }
-
 
   Future<void> _follow() async{
     print("entered in follow");
@@ -124,6 +146,24 @@ class _ProfileContainerState extends State<ProfileContainer> {
 
   }
 
+  Future<void> _loadFollowCount() async{
+    try{
+      print("Loading Follow Info.... 15152");
+      List<FollowUser> fetchedFollowingInfo = await LoadUserInfo.loadFollowingInfo(widget.userUid ?? -5);
+      List<FollowUser> fetchedFollowerInfo = await LoadUserInfo.loadFollowerInfo(widget.userUid ?? -5);
+      print("are you fdone?");
+      if(!mounted) null;
+      setState(() {
+        following = fetchedFollowingInfo.length;
+        follower = fetchedFollowerInfo.length;
+      });
+    }catch(e){
+      print(e.toString());
+    }
+    return null;
+
+  }
+
   void _redirectPage(String location) {
     context.go(location);
   }
@@ -133,7 +173,7 @@ class _ProfileContainerState extends State<ProfileContainer> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return  Column(
       children: [
         Container(
           height: 64,
@@ -147,9 +187,16 @@ class _ProfileContainerState extends State<ProfileContainer> {
               ListView.builder(
                 itemCount: tweets.isEmpty ? 2 : tweets.length + 2, //프로필과 실선(경계선) + 트윗 수
                   itemBuilder: (BuildContext ctx, int idx){
-                    return idx == 0 ? _buildProfileSection()
+                    return isLoading
+                        ? Center(
+                      child: Container(
+                          width: 603,
+                          child: CircularProgressIndicator()
+                      ),
+                    )
+                    : idx == 0 ? _buildProfileSection()
                       : idx == 1 ? _buildSolidLine(1.0)
-                          : tweetContainer(tweet: tweets[idx - 2]);
+                          : tweetContainer(tweet: tweets[idx - 2], key: ValueKey(tweets[idx - 2].id),);
                   }
               )
         ),
@@ -229,10 +276,14 @@ class _ProfileContainerState extends State<ProfileContainer> {
                       ),
                       CustomTextButton(
                           onPressed: (){
-                              print("Button Clicked!!!");
-                              setState(() {
+                              currentUserInfo.user_uid == userInfo?.user_uid
+                                ? setState(() {
+                                  print("Button Clicked!!!");
+                                  isInEditMode = !isInEditMode;
+                              })
+                                : setState(() {
                                 isFollowing ? _unFollow() : _follow();
-                                loadFollowInfo();
+                                isFollowing = !isFollowing;
                               });
                           },
                           width: 110,
@@ -244,7 +295,6 @@ class _ProfileContainerState extends State<ProfileContainer> {
                               borderRadius: BorderRadius.circular(30),
                           ),
                       ),
-
                     ],
                   ),
                 ),
@@ -263,70 +313,83 @@ class _ProfileContainerState extends State<ProfileContainer> {
 
                 height: 150,
                 child:
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      userInfo?.user_name ?? "Guest1",
-                      style: TextStyle(
-                        color: Theme.of(context).customTextColor1,
-                        fontSize: fontSize5,
-                        fontFamily: 'ABeeZee',
-                      ),
-                    ),Text(
-                      '@${userInfo?.user_id ?? "Guest1"}',
-                      style: TextStyle(
-                        color: Theme.of(context).customTextColor2,
-                        fontSize: fontSize2,
-                        fontFamily: 'ABeeZee',
-                      ),
-                    ),
-                    SizedBox(
-                      height: 15,
-                    ),
-                    Text(
-                      // userInfo?.user_email ?? 'none',
-                      isFollowing ? 'true' : 'false',
-                      style: TextStyle(
-                        color: Theme.of(context).customTextColor1,
-                        fontSize: fontSize2,
-                        fontFamily: 'ABeeZee',
-                      ),
-                    ),Text(
-                      'Join in ${userInfo?.created_at ?? "2024-11-11"}',
-                      style: TextStyle(
-                        color: Theme.of(context).customTextColor2,
-                        fontSize: fontSize2,
-                        fontFamily: 'ABeeZee',
-                      ),
-                    ),
-                    Row(
-                      children: [
-
-                        Text(
-                          "8 Followers",
-                          style: TextStyle(
-                            color: Theme.of(context).customTextColor1,
-                            fontSize: fontSize2,
-                            fontFamily: 'ABeeZee',
-                          ),
+                Form(
+                  key: formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                         userInfo?.user_name ?? "Guest1",
+                        style: TextStyle(
+                          color: Theme.of(context).customTextColor1,
+                          fontSize: fontSize5,
+                          fontFamily: 'ABeeZee',
                         ),
-                        SizedBox(width: 8,),
-                        Text(
-                          "0 Following",
-                          style: TextStyle(
-                            color: Theme.of(context).customTextColor1,
-                            fontSize: fontSize2,
-                            fontFamily: 'ABeeZee',
-                          ),
+                      ),
+                      Text(
+                        '@${userInfo?.user_id ?? "Guest1"}',
+                        style: TextStyle(
+                          color: Theme.of(context).customTextColor2,
+                          fontSize: fontSize2,
+                          fontFamily: 'ABeeZee',
                         ),
-                      ],
-                    )
-                  ],
+                      ),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      Text(
+                        // userInfo?.user_email ?? 'none',
+                        isFollowing ? 'true' : 'false',
+                        style: TextStyle(
+                          color: Theme.of(context).customTextColor1,
+                          fontSize: fontSize2,
+                          fontFamily: 'ABeeZee',
+                        ),
+                      ),
+                      Text(
+                        'Join in ${userInfo?.created_at ?? "2024-11-11"}',
+                        style: TextStyle(
+                          color: Theme.of(context).customTextColor2,
+                          fontSize: fontSize2,
+                          fontFamily: 'ABeeZee',
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          CustomTextButton(
+                            onPressed: (){
+                              print("Button Clicked!!!");
+                              setState(() {
+                                _redirectPage("/${userInfo?.user_uid}/followers");
+                              });
+                            },
+                            text : "${follower} Followers",
+                            fontSize: fontSize2,
+                            boxDecoration: BoxDecoration(
+                                color: Colors.transparent
+                            ),
+                          ),
+                          CustomTextButton(
+                            onPressed: (){
+                              print("Button Clicked!!!");
+                              setState(() {
+                                _redirectPage("/${userInfo?.user_uid}/following");
+                              });
+                            },
+                            text : "${following} Following",
+                            fontSize: fontSize2,
+                            boxDecoration: BoxDecoration(
+                                color: Colors.transparent
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
 
+                  ),
                 ),
               ),
-              Expanded(child: SizedBox()),
+              const Expanded(child: SizedBox()),
             ],
           )
         ],
