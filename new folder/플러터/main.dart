@@ -24,6 +24,7 @@ class _BookmarkPageState extends State<BookmarkPage> {
   final TextEditingController urlController = TextEditingController();
   List<dynamic> bookmarks = [];
   String csrfToken = '';
+  bool isLoading = false; // 로딩 상태
 
   @override
   void initState() {
@@ -32,7 +33,11 @@ class _BookmarkPageState extends State<BookmarkPage> {
   }
 
   // CSRF 토큰과 북마크 목록 가져오기
-  void fetchCsrfTokenAndBookmarks() async {
+  Future<void> fetchCsrfTokenAndBookmarks() async {
+    setState(() {
+      isLoading = true; // 로딩 상태 시작
+    });
+
     try {
       final token = await apiService.fetchCsrfToken();
       setState(() {
@@ -40,24 +45,46 @@ class _BookmarkPageState extends State<BookmarkPage> {
       });
       fetchBookmarks();
     } catch (e) {
-      print('Error: $e');
+      showError("Failed to fetch CSRF token: $e");
+    } finally {
+      setState(() {
+        isLoading = false; // 로딩 상태 종료
+      });
     }
   }
 
   // 북마크 목록 가져오기
-  void fetchBookmarks() async {
+  Future<void> fetchBookmarks() async {
+    setState(() {
+      isLoading = true; // 로딩 상태 시작
+    });
+
     try {
       final data = await apiService.getBookmarks(csrfToken);
       setState(() {
         bookmarks = data;
       });
     } catch (e) {
-      print('Error: $e');
+      showError("Failed to fetch bookmarks: $e");
+    } finally {
+      setState(() {
+        isLoading = false; // 로딩 상태 종료
+      });
     }
   }
 
   // 북마크 저장
-  void saveBookmark() async {
+  Future<void> saveBookmark() async {
+    if (csrfToken.isEmpty) {
+      showError("CSRF token is missing.");
+      return;
+    }
+
+    if (titleController.text.isEmpty || urlController.text.isEmpty) {
+      showError("Both title and URL are required.");
+      return;
+    }
+
     try {
       final response = await apiService.saveBookmark(
         titleController.text,
@@ -65,10 +92,20 @@ class _BookmarkPageState extends State<BookmarkPage> {
         csrfToken,
       );
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response)));
-      fetchBookmarks();
+
+      // 폼 필드 초기화
+      titleController.clear();
+      urlController.clear();
+
+      fetchBookmarks(); // 북마크 저장 후 목록 새로고침
     } catch (e) {
-      print('Error: $e');
+      showError("Failed to save bookmark: $e");
     }
+  }
+
+  // 에러 메시지 UI에 표시
+  void showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -93,18 +130,20 @@ class _BookmarkPageState extends State<BookmarkPage> {
               onPressed: saveBookmark,
               child: Text('Save Bookmark'),
             ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: bookmarks.length,
-                itemBuilder: (context, index) {
-                  final bookmark = bookmarks[index];
-                  return ListTile(
-                    title: Text(bookmark['bookmark_title']),
-                    subtitle: Text(bookmark['bookmark_url']),
-                  );
-                },
-              ),
-            ),
+            isLoading
+                ? Center(child: CircularProgressIndicator()) // 로딩 상태 표시
+                : Expanded(
+                    child: ListView.builder(
+                      itemCount: bookmarks.length,
+                      itemBuilder: (context, index) {
+                        final bookmark = bookmarks[index];
+                        return ListTile(
+                          title: Text(bookmark['bookmark_title']),
+                          subtitle: Text(bookmark['bookmark_url']),
+                        );
+                      },
+                    ),
+                  ),
           ],
         ),
       ),
