@@ -13,6 +13,7 @@
     <form id="bookmark-form">
         <input type="text" name="title" id="title" placeholder="Bookmark Title" required>
         <input type="url" name="url" id="url" placeholder="Bookmark URL" required>
+        <input type="hidden" name="csrf_token" id="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>"> <!-- CSRF 토큰 추가 -->
         <button type="submit">Save Bookmark</button>
     </form>
 
@@ -26,16 +27,26 @@
         // 북마크 저장
         $("#bookmark-form").on("submit", function (e) {
             e.preventDefault();
+
+            // 데이터 수집
+            const title = $("#title").val();
+            const url = $("#url").val();
+            const csrfToken = $("#csrf_token").val();
+
+            // AJAX 요청
             $.ajax({
                 url: "save_bookmark.php",
                 type: "POST",
-                data: {
-                    title: $("#title").val(),
-                    url: $("#url").val()
-                },
+                contentType: "application/json", // JSON 요청
+                data: JSON.stringify({ title, url, csrf_token: csrfToken }),
                 success: function (response) {
-                    $("#message").text(response);
-                    loadBookmarks(); // 북마크 목록 새로고침
+                    const data = JSON.parse(response);
+                    if (data.error) {
+                        $("#message").text(data.error);
+                    } else {
+                        $("#message").text("Bookmark saved successfully.");
+                        loadBookmarks();
+                    }
                 },
                 error: function () {
                     $("#message").text("Failed to save bookmark.");
@@ -48,8 +59,20 @@
             $.ajax({
                 url: "get_bookmarks.php",
                 type: "GET",
-                success: function (data) {
-                    $("#bookmark-list").html(data);
+                contentType: "application/json", // JSON 요청
+                success: function (response) {
+                    const data = JSON.parse(response);
+                    if (data.error) {
+                        $("#bookmark-list").html(`<p>${data.error}</p>`);
+                    } else if (data.bookmarks && data.bookmarks.length > 0) {
+                        let html = "";
+                        data.bookmarks.forEach(bookmark => {
+                            html += `<p><a href="${bookmark.url}" target="_blank">${bookmark.title}</a></p>`;
+                        });
+                        $("#bookmark-list").html(html);
+                    } else {
+                        $("#bookmark-list").html("<p>No bookmarks found.</p>");
+                    }
                 },
                 error: function () {
                     $("#bookmark-list").html("<p>Failed to load bookmarks.</p>");
