@@ -4,11 +4,11 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'floating_button.dart';
-import 'tweet_container.dart';
+import 'tweet_container.dart'; // TweetContainer를 사용하려면 이 파일을 import
 import 'package:contact1313/widgets/search_bar.dart';
 import 'package:contact1313/theme/theme_data.dart';
-import 'package:contact1313/theme/size.dart';
-import '../model/tweet.dart';
+import 'package:contact1313/theme/size.dart'; // size.dart import
+import '../model/tweet.dart'; // Tweet 모델을 사용하기 위해 import
 
 class BookmarkContainer extends StatefulWidget {
   const BookmarkContainer({super.key});
