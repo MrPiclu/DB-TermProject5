@@ -1,31 +1,36 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:contact1313/my_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:contact1313/main.dart';
-
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('Home Page loads and displays title', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const MyApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Verify that the home page title is displayed.
+    expect(find.text('Flutter Demo Home Page'), findsOneWidget);
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+  testWidgets('Floating button exists on Home Page', (WidgetTester tester) async {
+    // Build the app and trigger a frame.
+    await tester.pumpWidget(const MyApp());
+
+    // Verify the floating button is present.
+    expect(find.byType(FloatingActionButton), findsOneWidget);
+  });
+
+  testWidgets('Counter increments when the floating button is pressed', (WidgetTester tester) async {
+    // Build the app and trigger a frame.
+    await tester.pumpWidget(const MyApp());
+
+    // Verify initial counter state.
+    expect(find.text('0'), findsOneWidget);
+
+    // Tap the floating button and trigger a frame.
+    await tester.tap(find.byType(FloatingActionButton));
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
+    // Verify counter has incremented.
     expect(find.text('1'), findsOneWidget);
   });
 }
