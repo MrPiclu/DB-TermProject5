@@ -1,19 +1,31 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class AsyncDynamicHeightContainer extends StatefulWidget {
   final String imgUrl;
+  final ValueNotifier<bool> errorNotifier; // 에러 상태를 부모에게 전달
 
-  const AsyncDynamicHeightContainer({super.key, required this.imgUrl});
+  const AsyncDynamicHeightContainer({super.key, required this.imgUrl, required this.errorNotifier});
 
   @override
   AsyncDynamicHeightContainerState createState() => AsyncDynamicHeightContainerState();
 }
 
-class AsyncDynamicHeightContainerState extends State<AsyncDynamicHeightContainer> {
+class AsyncDynamicHeightContainerState extends State<AsyncDynamicHeightContainer> with AutomaticKeepAliveClientMixin{
   get url => widget.imgUrl;
+  late Future<Size> _imageSizeFuture;
 
-  Future<Size> getImageSize(url) async {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  void initState() {
+    super.initState();
+    _imageSizeFuture = _getImageSize(widget.imgUrl);
+  }
+
+  Future<Size> _getImageSize(url) async {
     final Completer<Size> completer = Completer();
 
     // 네트워크 이미지를 로드하고 크기를 계산
@@ -38,10 +50,10 @@ class AsyncDynamicHeightContainerState extends State<AsyncDynamicHeightContainer
 
   @override
   Widget build(BuildContext context) {
-
+    super.build(context);
     return Container(
         child: FutureBuilder<Size>(
-          future: getImageSize(url), // 이미지 크기 로드
+          future: _imageSizeFuture, // 이미지 크기 로드
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               // 이미지 로딩 중
@@ -52,9 +64,15 @@ class AsyncDynamicHeightContainerState extends State<AsyncDynamicHeightContainer
               );
             } else if (snapshot.hasError) {
               // 이미지 로드 실패
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                widget.errorNotifier.value = true; // 에러 상태 업데이트
+              });
               return Center(child: Text("Failed to load image"));
             } else if (snapshot.hasData) {
               // 이미지 로드 완료
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                widget.errorNotifier.value = false; // 에러 상태 업데이트
+              });
               final Size size = snapshot.data!;
               final double aspectRatio = size.width / size.height;
 
@@ -77,25 +95,20 @@ class AsyncDynamicHeightContainerState extends State<AsyncDynamicHeightContainer
                             //   fit: BoxFit.cover,
                             // ),
                           ),
-                          child: Image.network(url, fit: BoxFit.fitHeight, key: ValueKey(url),
-                            loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                              if (loadingProgress == null) {
-                                return child; // 이미지를 정상적으로 로드했을 때 표시
-                              }
+                          child: CachedNetworkImage(
+                            imageUrl: url,
+                            fit: BoxFit.fitHeight, // 기존의 BoxFit 옵션 유지
+                            placeholder: (BuildContext context, String url) {
                               return Center(
-                                child: CircularProgressIndicator(
-                                  value: loadingProgress.expectedTotalBytes != null
-                                      ? loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1)
-                                      : null, // 진행 상태를 표시
-                                ),
+                                child: CircularProgressIndicator(), // 로딩 상태 표시
                               );
                             },
-                            errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                            errorWidget: (BuildContext context, String url, dynamic error) {
                               return Center(
-                                child: Text('Image failed to load'),
+                                child: Text('Image failed to load'), // 에러 상태 표시
                               );
                             },
-                          ),
+                          )
 
                         ),
                       ),

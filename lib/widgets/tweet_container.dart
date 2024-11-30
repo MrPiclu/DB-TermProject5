@@ -33,7 +33,12 @@ class tweetContainer extends StatefulWidget {
   State<tweetContainer> createState() => _tweetContainerState();
 }
 
-class _tweetContainerState extends State<tweetContainer>{
+class _tweetContainerState extends State<tweetContainer> with AutomaticKeepAliveClientMixin{
+  final ValueNotifier<bool> errorNotifier = ValueNotifier<bool>(false);
+
+  @override
+  bool get wantKeepAlive => true;
+
   int favCount = 0;
   int chatCount = 0;
 
@@ -49,17 +54,28 @@ class _tweetContainerState extends State<tweetContainer>{
   void initState() {
      super.initState();
     // TODO: implement initState
-     loadAllData();
+     WidgetsBinding.instance.addPostFrameCallback((_) {
+       loadAllData();
+     });
+     isLoading = true;
   }
 
   Future<void> loadAllData() async {
-    await loadUserInfo();
-    await _loadMedias();  // 세 번째 함수 실행
-    await _downloadFav();
-    setState(() {
-      _convertDate();
-      isLoading = false;
-    });
+    try {
+      await Future.wait([
+        loadUserInfo(),
+        _loadMedias(),
+        _downloadFav(),
+      ]);
+      if (mounted) {
+        setState(() {
+          _convertDate();
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Error in loadAllData: $e');
+    }
   }
 
   void _redirectPage(String location) {
@@ -68,7 +84,6 @@ class _tweetContainerState extends State<tweetContainer>{
   void _incrementCounter() {
       print('hello');
   }
-
   void _convertDate(){
     parsedData = DateTime.parse(widget.tweet.created_at);
   }
@@ -76,14 +91,12 @@ class _tweetContainerState extends State<tweetContainer>{
   Future<void> loadUserInfo() async{
     try{
       User? fetchedUser = await LoadUserInfo.loadUserInfo(widget.tweet.user_uid ?? -5);
-      if(!mounted) return;
       if(mounted){
         setState(() {
           userInfo = fetchedUser; // 가져온 데이터를 상태에 저장
           print(userInfo?.user_name);
         });
       }
-
     }catch(e){
       print(e.toString());
     }
@@ -103,30 +116,6 @@ class _tweetContainerState extends State<tweetContainer>{
       print('Error fetching media: $e');
     }
   }
-
-  Future<void> _fav() async{
-    print("entered in favoriting");
-    try{
-      var res = await http.post(
-          Uri.parse(API.favTweet),
-          body: {
-            'user_uid' : currentUserInfo.user_uid.toString(), // 팔로우를 건 사람
-            'id' : widget.tweet.id.toString(), // 팔로우를 당한 사람
-            'isFav' : 'true',
-          });
-
-      setState(() {
-        favCount = widget.tweet.fav_count + 1;
-      });
-
-      print("Favorite!! ");
-      print(res.statusCode);
-      print(res.body);
-    }catch(e){
-      print(e.toString());
-    }
-  }
-
   Future<void> _updateFav(String type) async{
     print("entered in favoriting");
     try{
@@ -147,7 +136,6 @@ class _tweetContainerState extends State<tweetContainer>{
       print(e.toString());
     }
   }
-
   Future<void> _downloadFav() async{
     try{
       Map<String, dynamic> info = await RememberTweet.loadFavoriteInfo(widget.tweet.id ?? 0);
@@ -163,6 +151,7 @@ class _tweetContainerState extends State<tweetContainer>{
 
   @override
   Widget build(BuildContext context) {
+     super.build(context);
     return isLoading
       ? Center(
       child: Container(
@@ -239,7 +228,7 @@ class _tweetContainerState extends State<tweetContainer>{
                             SizedBox(height: 10),
                             Container(
                                 padding: EdgeInsets.all(8),
-                                // width: double.infinity,
+                                 width: fixedUrl == null ? double.infinity : null,
                                 decoration: BoxDecoration(
                                   color: Theme.of(context).customBackgroundColor2,
                                   borderRadius: BorderRadius.circular(10),
@@ -248,8 +237,15 @@ class _tweetContainerState extends State<tweetContainer>{
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(widget.tweet.body, style: TextStyle(color: Theme.of(context).customTextColor2, fontSize: fontSize2),),
-                                    const SizedBox(height: 8),
-                                    AsyncDynamicHeightContainer(imgUrl: fixedUrl!,),
+                                    SizedBox(
+                                        height: fixedUrl == null ? null : 8,
+                                    ),
+                                    if (fixedUrl != null)
+                                      AsyncDynamicHeightContainer(
+                                        key: ValueKey(fixedUrl!),
+                                        imgUrl: fixedUrl!,
+                                        errorNotifier: errorNotifier,
+                                      ),
                                   ],
                                 ),
 
