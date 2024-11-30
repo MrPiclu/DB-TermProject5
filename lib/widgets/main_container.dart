@@ -59,7 +59,7 @@ class _MainContainerState extends State<MainContainer> {
             'tweet_id' : 18.toString(),
             'body' : tweetContentController.text.trim(),
             'user_uid' : currentUserInfo.user_uid.toString(),
-            'media_url' : ImgUrl,
+            'media_url' : ImgUrl.toString(),
             'media_type' : 'image',
           });
 
