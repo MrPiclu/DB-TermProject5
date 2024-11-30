@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 import 'floating_button.dart';
 import 'tweet_container.dart';
 import 'package:contact1313/widgets/search_bar.dart';
 import 'package:contact1313/theme/theme_data.dart';
 import 'package:contact1313/theme/size.dart';
+import '../model/tweet.dart';
 
 class BookmarkContainer extends StatefulWidget {
   const BookmarkContainer({super.key});
@@ -15,19 +18,76 @@ class BookmarkContainer extends StatefulWidget {
 }
 
 class _BookmarkContainerState extends State<BookmarkContainer> {
+  List<Tweet> bookmarks = [];
+  bool isLoading = true;
+  TextEditingController _searchController = TextEditingController();
+  String searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBookmarks();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadBookmarks() async {
+    try {
+      final tweets = await _fetchBookmarks();
+      setState(() {
+        bookmarks = tweets;
+        isLoading = false;
+      });
+    } catch (e) {
+      _showErrorSnackBar('Failed to load bookmarks: $e');
+      setState(() => isLoading = false);
+    }
+  }
+
+  Future<List<Tweet>> _fetchBookmarks() async {
+    final response = await http.get(Uri.parse('YOUR_API_ENDPOINT/bookmarks'));
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      return data.map((item) => Tweet.fromJson(item)).toList();
+    } else {
+      throw Exception('Failed to fetch bookmarks');
+    }
+  }
+
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.redAccent,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
   void _redirectPage(String location) {
     context.go(location);
   }
 
   @override
   Widget build(BuildContext context) {
+    final filteredBookmarks = bookmarks.where((tweet) {
+      return tweet.body.toLowerCase().contains(searchQuery.toLowerCase());
+    }).toList();
+
     return Scaffold(
       backgroundColor: Theme.of(context).customBackgroundColor1,
       body: Column(
         children: [
           _buildHeader(context),
           Expanded(
-            child: _buildBookmarksList(context),
+            child: isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _buildBookmarksList(filteredBookmarks),
           ),
         ],
       ),
@@ -40,7 +100,7 @@ class _BookmarkContainerState extends State<BookmarkContainer> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 8),
+          const SizedBox(height: kSmallPadding),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -49,43 +109,51 @@ class _BookmarkContainerState extends State<BookmarkContainer> {
                 colorVal: Theme.of(context).customTransparentColor,
                 toolTip: '',
                 icon: Icons.arrow_back,
-                iconSize: iconSize2,
+                iconSize: kIconSize,
                 height: 36,
                 width: 36,
                 iconColor: Theme.of(context).customIconColor2,
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: kDefaultPadding),
               Text(
                 'Bookmarks',
-                style: TextStyle(
-                  color: Theme.of(context).customTextColor2,
-                  fontSize: fontSize5,
-                  fontFamily: 'ABeeZee',
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.headline1,
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          const SearchBarContainer(
-            edgeInsets: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          const SizedBox(height: kSmallPadding),
+          SearchBarContainer(
+            edgeInsets: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             round: 16,
+            controller: _searchController,
+            onChanged: (value) {
+              setState(() {
+                searchQuery = value;
+              });
+            },
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: kSmallPadding),
           _buildDivider(1.0),
         ],
       ),
     );
   }
 
-  Widget _buildBookmarksList(BuildContext context) {
+  Widget _buildBookmarksList(List<Tweet> filteredBookmarks) {
+    if (filteredBookmarks.isEmpty) {
+      return Center(
+        child: Text(
+          'No bookmarks available',
+          style: Theme.of(context).textTheme.bodyText1,
+        ),
+      );
+    }
+
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      itemCount: 10, // Replace with your data source
+      itemCount: filteredBookmarks.length,
       itemBuilder: (context, index) {
-        return TweetContainer(
-          tweet: _mockTweet(index), // Replace with actual data
-        );
+        return TweetContainer(tweet: filteredBookmarks[index]);
       },
     );
   }
@@ -95,17 +163,6 @@ class _BookmarkContainerState extends State<BookmarkContainer> {
       color: Theme.of(context).dividerColor,
       thickness: thickness,
       height: thickness,
-    );
-  }
-
-  Tweet _mockTweet(int index) {
-    return Tweet(
-      id: index,
-      user_uid: 123,
-      created_at: DateTime.now().toIso8601String(),
-      body: 'This is a sample bookmarked tweet #$index',
-      fav_count: index * 10,
-      chat_count: index * 5,
     );
   }
 }
