@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import '../api/api.dart';
 import '../authentication/login.dart';
 import '../model/media.dart';
-import '../model/tweet.dart';
+import '../model/tweet.dart'; // Tweet 모델을 사용하기 위해 import
 import '../model/user.dart';
 import '../tweet/tweet_pref.dart';
 import '../tweet/media_pref.dart';
@@ -135,7 +135,7 @@ class _TweetContainerState extends State<TweetContainer> {
         child: Column(
           children: [
             _buildTweetContent(context),
-            _buildDivider(),
+            _buildTweetActions(context),
           ],
         ),
       ),
@@ -144,149 +144,60 @@ class _TweetContainerState extends State<TweetContainer> {
 
   Widget _buildTweetContent(BuildContext context) {
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(8),
-      child: Column(
+      padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              InkWell(
-                onTap: _redirectToProfile,
-                child: CircularProfile(
-                  onPressed: _redirectToProfile,
-                  radius: 25,
-                  userInfo: userInfo,
-                  strokeRadius: 0,
+          CircularProfileImage(userInfo: userInfo),
+          const SizedBox(width: kSmallPadding),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildTweetHeader(context),
+                const SizedBox(height: kSmallPadding),
+                Text(
+                  widget.tweet.body,
+                  style: Theme.of(context).textTheme.bodyText1,
                 ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildTweetDetails(context),
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          _buildReactionRow(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTweetDetails(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildUserInfoRow(context),
-        const SizedBox(height: 10),
-        _buildTweetBody(context),
-      ],
-    );
-  }
-
-  Widget _buildUserInfoRow(BuildContext context) {
-    return Row(
-      children: [
-        Text(
-          userInfo?.user_name ?? 'Guest',
-          style: TextStyle(
-            color: Theme.of(context).customTextColor1,
-            fontSize: fontSize4,
-          ),
-        ),
-        const SizedBox(width: 8),
-        Text(
-          '@${userInfo?.user_name ?? 'Guest'}',
-          style: TextStyle(
-            color: Theme.of(context).customTextColor2,
-            fontSize: fontSize2,
-          ),
-        ),
-        const Spacer(),
-        Text(
-          parsedDate != null ? DateFormat('dd MMM').format(parsedDate!) : '',
-          style: TextStyle(
-            color: Theme.of(context).customTextColor2,
-            fontSize: fontSize4,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTweetBody(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Theme.of(context).customBackgroundColor2,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            widget.tweet.body,
-            style: TextStyle(
-              color: Theme.of(context).customTextColor2,
-              fontSize: fontSize2,
+                const SizedBox(height: kSmallPadding),
+                if (mediaUrl != null) ...[
+                  AsyncImg(mediaUrl: mediaUrl!),
+                ],
+              ],
             ),
           ),
-          const SizedBox(height: 8),
-          if (mediaUrl != null)
-            AsyncDynamicHeightContainer(imgUrl: mediaUrl!),
         ],
       ),
     );
   }
 
-  Widget _buildReactionRow() {
+  Widget _buildTweetHeader(BuildContext context) {
     return Row(
       children: [
-        ReactionButton(
-          onPressed: () => _updateFavoriteStatus(!isFavorited),
-          colorVal: Theme.of(context).customTransparentColor,
-          toolTip: 'Favorite',
-          icon: Icons.favorite,
-          iconSize: iconSize2,
-          width: 48,
-          height: 36,
-          iconColor: isFavorited
-              ? Theme.of(context).customIconHighlightedColor3
-              : Theme.of(context).customIconColor1,
-          count: favCount.toString(),
+        Text(
+          userInfo?.username ?? '',
+          style: Theme.of(context).textTheme.subtitle2,
         ),
-        const SizedBox(width: 8),
-        ReactionButton(
-          onPressed: () {},
-          colorVal: Theme.of(context).customTransparentColor,
-          toolTip: 'Comment',
-          icon: Icons.chat_bubble,
-          iconSize: iconSize2,
-          width: 48,
-          height: 36,
-          iconColor: Theme.of(context).customIconColor1,
-          count: widget.tweet.chat_count,
-        ),
-        const Spacer(),
-        ReactionButton(
-          onPressed: () {},
-          colorVal: Theme.of(context).customTransparentColor,
-          toolTip: 'Bookmark',
-          icon: Icons.bookmark,
-          iconSize: iconSize2,
-          width: 48,
-          height: 36,
-          iconColor: Theme.of(context).customIconInvertColor1,
+        const SizedBox(width: kSmallPadding),
+        Text(
+          DateFormat('hh:mm a, dd/MM/yyyy').format(parsedDate ?? DateTime.now()),
+          style: Theme.of(context).textTheme.bodyText2,
         ),
       ],
     );
   }
 
-  Widget _buildDivider() {
-    return Container(
-      height: 1.0,
-      color: Theme.of(context).dividerColor,
+  Widget _buildTweetActions(BuildContext context) {
+    return Row(
+      children: [
+        ReactionButton(
+          icon: Icons.favorite,
+          count: favCount,
+          isSelected: isFavorited,
+          onPressed: () => _updateFavoriteStatus(!isFavorited),
+        ),
+      ],
     );
   }
 }
