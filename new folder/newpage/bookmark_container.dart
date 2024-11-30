@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:contact1313/home_page.dart';
-import 'package:contact1313/theme/size.dart';
-import 'package:contact1313/theme/theme_data.dart';
-import 'package:contact1313/widgets/search_bar.dart';
-import 'tweet_container.dart';
 import 'floating_button.dart';
+import 'tweet_container.dart';
+import 'package:contact1313/widgets/search_bar.dart';
+import 'package:contact1313/theme/theme_data.dart';
+import 'package:contact1313/theme/size.dart';
 
 class BookmarkContainer extends StatefulWidget {
   const BookmarkContainer({super.key});
@@ -35,7 +34,6 @@ class _BookmarkContainerState extends State<BookmarkContainer> {
     );
   }
 
-  // 헤더 위젯
   Widget _buildHeader(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -80,20 +78,18 @@ class _BookmarkContainerState extends State<BookmarkContainer> {
     );
   }
 
-  // 즐겨찾기 목록
   Widget _buildBookmarksList(BuildContext context) {
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      itemCount: 10, // Example count; replace with actual data
+      itemCount: 10, // Replace with your data source
       itemBuilder: (context, index) {
         return TweetContainer(
-          tweet: _mockTweet(index), // Replace with your data source
+          tweet: _mockTweet(index), // Replace with actual data
         );
       },
     );
   }
 
-  // 구분선
   Widget _buildDivider(double thickness) {
     return Divider(
       color: Theme.of(context).dividerColor,
@@ -102,7 +98,6 @@ class _BookmarkContainerState extends State<BookmarkContainer> {
     );
   }
 
-  // 더미 데이터 생성 (실제 데이터로 교체 필요)
   Tweet _mockTweet(int index) {
     return Tweet(
       id: index,
