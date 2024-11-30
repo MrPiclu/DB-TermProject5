@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'api_service.dart';
+import 'new_dm_page.dart'; // 새로운 DM 화면 추가
 
 class DmPage extends StatefulWidget {
   @override
@@ -42,6 +43,16 @@ class _DmPageState extends State<DmPage> {
             subtitle: Text('Sender: ${message['sender_id']}'),
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => NewDMPage()), // 새로운 DM 페이지로 이동
+          );
+        },
+        tooltip: 'New DM',
+        child: const Icon(Icons.add),
       ),
     );
   }
