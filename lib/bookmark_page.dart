@@ -1,19 +1,19 @@
 import 'package:contact1313/theme/theme_data.dart';
-import 'package:contact1313/widgets/profile_container.dart';
 import 'package:flutter/material.dart';
-import 'authentication/login.dart';
+import 'widgets/bookmark_container.dart';
 import 'widgets/custom_container.dart';
 
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+class BookmarkPage extends StatefulWidget {
+  const BookmarkPage({super.key});
 
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<BookmarkPage> createState() => _BookmarkPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _BookmarkPageState extends State<BookmarkPage> {
+
 
   @override
   Widget build(BuildContext context) {
@@ -22,11 +22,11 @@ class _MyHomePageState extends State<MyHomePage> {
           backgroundColor: Theme.of(context).customBackgroundColor1,
           body: Center(
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 const CustomContainer(),
                 Container(width: 1,height: double.infinity, color: Theme.of(context).dividerColor),
-                ProfileContainer(userUid: currentUserInfo.user_uid!),
+                const BookmarkContainer(),
                 Container(width: 1,height: double.infinity, color: Theme.of(context).dividerColor),
               ],
             ),

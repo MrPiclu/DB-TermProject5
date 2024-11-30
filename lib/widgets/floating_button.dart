@@ -14,18 +14,15 @@ class FloatingButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Tooltip(
-      message: toolTip,
-      verticalOffset: 30, // 툴팁 위치를 아래로 이동
-      child: SizedBox(
+    return SizedBox(
         width: width,
         height: height,
         child: FloatingActionButton(
+          elevation: 0.0,
           onPressed: onPressed,
           backgroundColor: colorVal,
           child: Icon(icon, size: iconSize, color: iconColor,),
         ),
-      ),
-    );
+      );
   }
 }
