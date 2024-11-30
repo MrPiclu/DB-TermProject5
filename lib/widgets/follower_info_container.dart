@@ -26,9 +26,6 @@ import '../theme/colors.dart';
 import 'floating_button.dart';
 import 'package:http/http.dart' as http;
 
-List<User?> users = [];
-User? userInfo;
-
 class FollowerInfoContainer extends StatefulWidget {
   final  int userUid;
   const FollowerInfoContainer({super.key, required this.userUid});
@@ -42,8 +39,10 @@ class _FollowerInfoContainerState extends State<FollowerInfoContainer> {
   bool isFollowing = false;
   User? getUser;
 
-  @override
+  List<User?> users = [];
+  User? userInfo;
 
+  @override
   void initState() {
     super.initState();
     // TODO: implement initState\

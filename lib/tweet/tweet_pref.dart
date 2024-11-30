@@ -7,8 +7,6 @@ import '../model/tweet.dart';
 import 'package:http/http.dart' as http;
 
 class RememberTweet{
-  static const String _userKey = "currentUser"; // 저장할 키 이름
-
   static Future<List<Tweet>> loadTweets(int userUid) async{
     if(userUid == -5)  return [];
     try{
@@ -75,10 +73,43 @@ class RememberTweet{
     }
   }
 
+  static Future<List<Tweet>> loadFavoriteTweets() async{
+    print("entered favorite tweet");
+    try{
+      var res = await http.post(
+          Uri.parse(API.getFavoriteTweets),
+          body: {
+            'user_uid' : currentUserInfo.user_uid.toString(),
+          });
+
+      print(res.statusCode);
+      print(res.body);
+
+      if(res.statusCode == 200){
+        final Map<String, dynamic> decoded = jsonDecode(res.body);
+        if(decoded['success'] == true){
+          List<dynamic> tweetsJson = decoded['allFavTweets'];
+          return tweetsJson.map((tweet) => Tweet.fromJson(tweet)).toList();
+        }else{
+          // Fluttertoast.showToast(msg: 'Error occurred.');
+          return [];
+        }
+      }else {
+        throw Exception('Failed to fetch tweets: ${res.statusCode}');
+      }
+    }catch(e){
+      print('load tweet Catched');
+      print(e.toString());
+      return [];
+      // Fluttertoast.showToast(msg: e.toString());
+
+    }
+  }
+
   static Future<Map<String, dynamic>> loadFavoriteInfo(int tweetId) async{
-    print("Load Following Info in User_pref");
+    // print("Load Following Info in User_pref");
     if (tweetId == -5) {
-      print('Invalid user_uid ID');
+      // print('Invalid user_uid ID');
       return {
         'userCount': 0,
         'isFavorited': false,
@@ -93,20 +124,20 @@ class RememberTweet{
         },
       );
 
-      print(res.statusCode);
-      print(res.body);
+      // print(res.statusCode);
+      // print(res.body);
 
       if(res.statusCode == 200){
-        print("1");
+        // print("1");
         final Map<String, dynamic> decoded = jsonDecode(res.body);
 
-        print("1");
+        // print("1");
         if(decoded['success'] == true){
           List<dynamic> usersJson = decoded['users'];
           bool isFavorited = decoded['isFavorited'];
-          print("아이고난시");
-          print(usersJson.toString());
-          print(isFavorited.toString());
+          // print("아이고난시");
+          // print(usersJson.toString());
+          // print(isFavorited.toString());
 
             return {
               'userCount' : usersJson.length,
@@ -119,7 +150,7 @@ class RememberTweet{
           };
         }
       }
-      print("5");
+      // print("5");
     }catch(e){
       print('getFollowingUsers Catched');
       print(e.toString());

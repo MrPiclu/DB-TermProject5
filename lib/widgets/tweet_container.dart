@@ -18,9 +18,6 @@ import 'reaction_button.dart';
 import 'package:http/http.dart' as http;
 
 
-Media? medias;
-User? userInfo;
-
 class tweetContainer extends StatefulWidget {
 
   final Tweet tweet;
@@ -35,6 +32,9 @@ class tweetContainer extends StatefulWidget {
 
 class _tweetContainerState extends State<tweetContainer> with AutomaticKeepAliveClientMixin{
   final ValueNotifier<bool> errorNotifier = ValueNotifier<bool>(false);
+
+  Media? medias;
+  User? userInfo;
 
   @override
   bool get wantKeepAlive => true;
@@ -101,6 +101,7 @@ class _tweetContainerState extends State<tweetContainer> with AutomaticKeepAlive
       print(e.toString());
     }
   }
+
   Future<void> _loadMedias() async {
     final tweetId = widget.tweet.id;
     try {
@@ -116,6 +117,7 @@ class _tweetContainerState extends State<tweetContainer> with AutomaticKeepAlive
       print('Error fetching media: $e');
     }
   }
+
   Future<void> _updateFav(String type) async{
     print("entered in favoriting");
     try{
@@ -129,6 +131,30 @@ class _tweetContainerState extends State<tweetContainer> with AutomaticKeepAlive
       print("Favorite!! ");
       print(res.statusCode);
       print(res.body);
+      if(type == 'true'){
+        await _sendNotify("like");
+      }
+      await _downloadFav();
+
+    }catch(e){
+      print(e.toString());
+    }
+  }
+
+  Future<void> _sendNotify(String type) async{
+    print("entered in favoriting");
+    try{
+      var res = await http.post(
+          Uri.parse(API.uploadNotify),
+          body: {
+            'initiator_id' : currentUserInfo.user_uid.toString(), // 팔로우를 건 사람
+            'user_uid' : widget.tweet.user_uid.toString(), // 팔로우를 건 사람
+            'tweet_id' : widget.tweet.id.toString(), // 팔로우를 당한 사람
+            'type' : type, // 팔로우를 당한 사람
+          });
+
+      print(res.statusCode);
+      print(res.body);
 
       await _downloadFav();
 
@@ -136,6 +162,7 @@ class _tweetContainerState extends State<tweetContainer> with AutomaticKeepAlive
       print(e.toString());
     }
   }
+
   Future<void> _downloadFav() async{
     try{
       Map<String, dynamic> info = await RememberTweet.loadFavoriteInfo(widget.tweet.id ?? 0);

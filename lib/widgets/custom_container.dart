@@ -19,6 +19,10 @@ class CustomContainer extends StatefulWidget {
 class _CustomContainerState extends State<CustomContainer> {
   bool _isLightMode = false;
 
+  bool _isRecommend = true;
+  bool _isFollowing = false;
+  bool _isFavorite = false;
+
   void _redirectPage(String location) {
     context.go(location);
   }
@@ -182,43 +186,47 @@ class _CustomContainerState extends State<CustomContainer> {
               ),
           ),
           const SizedBox(height: 2),
-          _buildTextButton(Icons.recommend,'Recommend', Theme.of(context).customTextColor1, iconSize2, Theme.of(context).customIconColor1, "/bookmark"),
+          _buildTextButton(
+              Icons.recommend,'Recommend',
+              _isRecommend ? Theme.of(context).customTextColor1
+                  : Theme.of(context).customTextColor2, iconSize2,
+              Theme.of(context).customIconColor1, "/home"),
           const SizedBox(height: 2),
-          _buildTextButton(Icons.people,'Following', Theme.of(context).customTextColor1, iconSize2, Theme.of(context).customIconColor1, "/home"),
+          _buildTextButton(
+              Icons.people,'Following',
+              _isFollowing ? Theme.of(context).customTextColor1
+              : Theme.of(context).customTextColor2, iconSize2,
+              Theme.of(context).customIconColor1, "/followingFeed"),
           const SizedBox(height: 2),
-          _buildFavoriteSection(),
+          _buildTextButton(
+              _isFavorite ? Icons.favorite: Icons.favorite_border_outlined,'Favorite',
+              _isFavorite ? Theme.of(context).customTextColor1
+                  : Theme.of(context).customTextColor2, iconSize2,
+              Theme.of(context).customIconColor1, "/favoriteFeed"),
+          const SizedBox(height: 2),
         ],
       ),
     );
   }
 
-  Widget _buildFavoriteSection() {
-    return Column(
-      children: [
-        _buildTextButton(Icons.favorite,'Favorite', Theme.of(context).customTextColor1, iconSize2, Theme.of(context).customIconColor1, "/home"),
-        _buildSubListItem('Gachon'),
-        _buildSubListItem('Foods'),
-      ],
-    );
-  }
-
-  Widget _buildSubListItem(String text) {
-    return Container(
-      width: double.infinity,
-      height: 24,
-      padding: const EdgeInsets.only(top: 0, left: 28, right: 8, bottom: 0),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            child: _buildSideTextButton(Icons.favorite, text, Theme.of(context).customTextColor1, iconSize1),
-          ),
-        ],
-      ),
-    );
-  }
+  //
+  // Widget _buildSubListItem(String text) {
+  //   return Container(
+  //     width: double.infinity,
+  //     height: 24,
+  //     padding: const EdgeInsets.only(top: 0, left: 28, right: 8, bottom: 0),
+  //     child: Row(
+  //       mainAxisSize: MainAxisSize.min,
+  //       mainAxisAlignment: MainAxisAlignment.start,
+  //       crossAxisAlignment: CrossAxisAlignment.center,
+  //       children: [
+  //         Expanded(
+  //           child: _buildSideTextButton(Icons.favorite, text, Theme.of(context).customTextColor1, iconSize1),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildSolidLine(double radius){
     return Container(
@@ -232,7 +240,24 @@ class _CustomContainerState extends State<CustomContainer> {
     return SizedBox(
         width: double.infinity,
         child: TextButton.icon(
-          onPressed: () => _redirectPage(directPage),
+          onPressed: () {
+            _redirectPage(directPage);
+            setState(() {
+              if(directPage == "/home"){
+                _isRecommend = true;
+                _isFollowing = false;
+                _isFavorite = false;
+              }else if(directPage == "/followingFeed"){
+                _isFollowing = true;
+                _isRecommend = false;
+                _isFavorite = false;
+              }else if(directPage == "/favoriteFeed"){
+                _isFavorite = true;
+                _isFollowing = false;
+                _isRecommend = false;
+              }
+            });
+          },
           icon: Icon(icon, size: iconSize, color: iconColor), // "+" 버튼
           label: Text(
             text,

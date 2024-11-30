@@ -26,8 +26,6 @@ import '../theme/colors.dart';
 import 'floating_button.dart';
 import 'package:http/http.dart' as http;
 
-List<User?> users = [];
-User? userInfo;
 
 class FollowingInfoContainer extends StatefulWidget {
   final  int userUid;
@@ -41,6 +39,9 @@ class _FollowingInfoContainerState extends State<FollowingInfoContainer> {
   bool isLoading = true;
   bool isFollowing = false;
   User? getUser;
+
+  List<User?> users = [];
+  User? userInfo;
 
   @override
 
@@ -107,7 +108,6 @@ class _FollowingInfoContainerState extends State<FollowingInfoContainer> {
     }catch(e){
       print(e.toString());
     }
-
   }
 
   void _redirectPage(String location) {

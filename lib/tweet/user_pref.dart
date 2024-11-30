@@ -11,13 +11,13 @@ import 'package:intl/intl.dart';
 
 class LoadUserInfo{
   static Future<User?> loadUserInfo(int userUid) async{
-    print("entered in loaduser info in user_pref");
+    // print("entered in loaduser info in user_pref");
     if (userUid == -5) {
-      print('Invalid user_uid ID');
+      // print('Invalid user_uid ID');
       return null; // 잘못된 tweet_id 처리
     }
     try{
-      print("user uid is ${userUid}");
+      // print("user uid is ${userUid}");
       var res = await http.post(
         Uri.parse(API.getUserInfo),
         body: {
@@ -25,17 +25,17 @@ class LoadUserInfo{
         },
       );
 
-      print("go next");
+      // print("go next");
 
-      print(res.statusCode);
-      print(res.body);
+      // print(res.statusCode);
+      // print(res.body);
 
       if(res.statusCode == 200){
-        print("go next");
+        // print("go next");
         var resUserInfo = jsonDecode(res.body);
 
         if(resUserInfo['success'] == true){
-          print("go next");
+          // print("go next");
           return User.fromJson(resUserInfo['userData']);
         }else{
           print("Erorr ");
@@ -86,6 +86,85 @@ class LoadUserInfo{
       print(e.toString());
     }
     return false;
+  }
+
+  static Future<List<User>> loadAllInfo() async{
+    print("Load loadAllInfo Info in User_pref");
+    try{
+      var res = await http.post(
+        Uri.parse(API.getAllUsers),
+      );
+
+      print(res.statusCode);
+      print(res.body);
+
+      if(res.statusCode == 200){
+        print("1");
+        final Map<String, dynamic> decoded = jsonDecode(res.body);
+
+        print("1");
+        if(decoded['success'] == true){
+          print("1");
+          List<dynamic> usersJson = decoded['allUsers'];
+          print("1");
+
+          if (usersJson.isNotEmpty) {
+            print("1");
+            // 전체 JSON 데이터를 User 리스트로 변환하여 반환
+            return usersJson.map((json) => User.fromJson(json)).toList();
+          } else {
+            return [];
+          }
+        }else{
+          return [];
+        }
+      }
+      print("5");
+    }catch(e){
+      print('getFollowingUsers Catched');
+      print(e.toString());
+    }
+    return [];
+  }
+
+  static Future<Map<String, dynamic>> loadFavoriteInfo() async{
+    print("Load Following Info in User_pref");
+    try{
+      var res = await http.post(
+        Uri.parse(API.getFavoriteTweets),
+        body: {
+          'user_uid' : currentUserInfo.user_uid.toString(), // 팔로우를 건 사람
+        },
+      );
+
+      print(res.statusCode);
+      print(res.body);
+
+      if(res.statusCode == 200){
+        print("1");
+        final Map<String, dynamic> decoded = jsonDecode(res.body);
+
+        print("1");
+        if(decoded['success'] == true){
+          print("1");
+          List<dynamic> usersJson = decoded['allFavTweets'];
+
+          // `List<dynamic>`을 `List<int?>`로 변환
+          return {
+            'allFavTweets' : usersJson,
+          };
+        }
+        return {
+          'allFavTweets' : 0,
+        };
+      }
+    }catch(e){
+      print('getFollowingUsers Catched');
+      print(e.toString());
+    }
+    return {
+      'allFavTweets' : 0,
+    };
   }
 
   static Future<List<FollowUser>> loadFollowingInfo(int userUid) async{

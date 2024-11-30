@@ -3,6 +3,8 @@ class API{
   static const hostConnectUser = "$hostConnect/user";
 
   static const validateEmail = "$hostConnect/user/validate_email.php";
+  static const validatePassword = "$hostConnect/user/validate_password.php";
+  static const changePassword = "$hostConnect/user/change_password.php";
   static const signup = "$hostConnect/user/signup.php";
   static const login = "$hostConnect/user/login.php";
 
@@ -13,12 +15,16 @@ class API{
   static const downloadTweets = "$hostConnect/user/download_tweet.php";
   static const downloadTweetMedia = "$hostConnect/user/download_tweet_media.php";
   static const getFollowingUsers = "$hostConnect/user/get_following_users.php";
+  static const getFavoriteTweets = "$hostConnect/user/get_favorite_tweets.php";
+  static const getAllUsers = "$hostConnect/user/get_all_users.php";
 
   static const follow = "$hostConnect/user/follow.php";
   static const unFollow = "$hostConnect/user/unfollow.php";
 
   static const favTweet = "$hostConnect/user/fav_tweet.php";
   static const updateFavTweet = "$hostConnect/user/update_fav_tweet.php";
+  static const uploadNotify = "$hostConnect/user/update_notification.php";
+  static const downloadNotify = "$hostConnect/user/download_notification.php";
   static const downloadFavTweet = "$hostConnect/user/download_fav_tweet.php";
 
 }

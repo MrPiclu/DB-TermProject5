@@ -2,10 +2,13 @@ import 'dart:ui';
 import 'package:contact1313/authentication/login.dart';
 import 'package:contact1313/main_screen.dart';
 import 'package:contact1313/widgets/bookmark_container.dart';
+import 'package:contact1313/widgets/favorite_feed_container.dart';
 import 'package:contact1313/widgets/follower_info_container.dart';
 import 'package:contact1313/widgets/following_info_container.dart';
-import 'package:contact1313/widgets/main_container.dart';
+import 'package:contact1313/widgets/following_feed_container.dart';
 import 'package:contact1313/widgets/profile_container.dart';
+import 'package:contact1313/widgets/recommend_feed_container.dart';
+import 'package:contact1313/widgets/reset_password_container.dart';
 import 'package:go_router/go_router.dart';
 import 'package:contact1313/theme/theme_data.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +54,7 @@ final GoRouter _router = GoRouter(
         routes: [
         GoRoute(
           path: "/home",
-          pageBuilder: (context, state) => const NoTransitionPage(child: MainContainer()),
+          pageBuilder: (context, state) => const NoTransitionPage(child: RecommendFeedContainer()),
         ),
           GoRoute(
             path: "/bookmark",
@@ -69,6 +72,24 @@ final GoRouter _router = GoRouter(
             pageBuilder: (context, state) {
               final userId = state.pathParameters['userId']; // userId 추출
               return NoTransitionPage(child: FollowingInfoContainer(userUid: int.parse(userId!)));
+            },
+          ),
+          GoRoute(
+            path: "/followingFeed", // 동적 매개변수 userId를 앞에 배치
+            pageBuilder: (context, state) {
+              return NoTransitionPage(child: FollowingFeedContainer());
+            },
+          ),
+          GoRoute(
+            path: "/favoriteFeed", // 동적 매개변수 userId를 앞에 배치
+            pageBuilder: (context, state) {
+              return NoTransitionPage(child: FavoriteFeedContainer());
+            },
+          ),
+          GoRoute(
+            path: "/resetPassword", // 동적 매개변수 userId를 앞에 배치
+            pageBuilder: (context, state) {
+              return NoTransitionPage(child: ResetPasswordContainer());
             },
           ),
           GoRoute(

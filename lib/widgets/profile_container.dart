@@ -26,8 +26,6 @@ import '../theme/colors.dart';
 import 'floating_button.dart';
 import 'package:http/http.dart' as http;
 
-List<Tweet> tweets = [];
-User? userInfo;
 
 class ProfileContainer extends StatefulWidget {
   final  int userUid;
@@ -38,17 +36,25 @@ class ProfileContainer extends StatefulWidget {
 }
 
 class _ProfileContainerState extends State<ProfileContainer> {
+  final GlobalKey _buttonKey = GlobalKey(); // 특정 위젯을 찾기 위한 GlobalKey
+  var changePasswordController = TextEditingController();
+
   bool isLoading = true;
   bool isFollowing = false;
   int follower = 0;
   int following = 0;
   @override
 
+  List<Tweet> tweets = [];
+  User? userInfo;
+
   var formKey = GlobalKey<FormState>();
   var userNameController = TextEditingController();
   var userIdController = TextEditingController();
 
   bool isInEditMode = false;
+  bool isOpenedOverlay = false;
+
 
   void initState() {
     super.initState();
@@ -275,12 +281,10 @@ class _ProfileContainerState extends State<ProfileContainer> {
                         child: SizedBox(),
                       ),
                       CustomTextButton(
+                        key: _buttonKey,
                           onPressed: (){
                               currentUserInfo.user_uid == userInfo?.user_uid
-                                ? setState(() {
-                                  print("Button Clicked!!!");
-                                  isInEditMode = !isInEditMode;
-                              })
+                                ? addOverlay()
                                 : setState(() {
                                 isFollowing ? _unFollow() : _follow();
                                 isFollowing = !isFollowing;
@@ -397,21 +401,125 @@ class _ProfileContainerState extends State<ProfileContainer> {
     );
   }
 
-  Widget _buildIconRow() {
-    return Row(
-        children: [
-          FloatingButton(
-            onPressed:_incrementCounter, colorVal: Theme.of(context).customIconBackgroundColor1, toolTip :'Upload Picture',
-            icon: Icons.photo, iconSize: iconSize2, height: 24, width: 48,iconColor: Theme.of(context).customIconColor1,
-          ),
-          const SizedBox(width: 8),
-          FloatingButton(
-            onPressed:_incrementCounter, colorVal: Theme.of(context).customIconBackgroundColor1, toolTip :'Share Location',
-            icon: Icons.location_on_sharp, iconSize: iconSize2, height: 24, width: 48,iconColor: Theme.of(context).customIconColor1,
-          ),
-        ]
+  void toggleOverlay() {
+    print(isOpenedOverlay);
+    setState(() {
+      isOpenedOverlay ? removeOverlay() : addOverlay();
+      isOpenedOverlay = !isOpenedOverlay;
+    });
+  }
+
+  final overlays = <OverlayEntry>[];
+
+  void addOverlay(){
+    if(overlays.length > 1){
+      removeOverlay();
+    }else{
+      overlays.add(overlayEntry);
+      Overlay.of(context).insert(overlays.last);
+    }
+  }
+
+
+  void removeOverlay(){
+    if(overlays.isNotEmpty) overlays.removeLast().remove();
+    setState(() {
+
+    });
+  }
+
+  OverlayEntry get overlayEntry{
+    final ValueNotifier<bool> errorNotifier = ValueNotifier<bool>(false);
+    final RenderBox renderBox = _buttonKey.currentContext!.findRenderObject() as RenderBox;
+    final Size size = renderBox.size;
+    final Offset offset = renderBox.localToGlobal(Offset.zero);
+    bool _hasText = false;
+    bool _isSearchingImg = false;
+    bool _isSearchSuccess = false;
+
+
+
+    return OverlayEntry(
+        opaque: false,
+        builder: (context){
+
+          return StatefulBuilder(
+              builder: (context, setState){
+                return  Stack(
+                  children: [
+                    // GestureDetector로 바깥 클릭 시 오버레이 닫기
+                    Positioned.fill(
+                      child: GestureDetector(
+                        onTap: () {
+                          removeOverlay();
+                        },
+                      ),
+                    ),
+                    Positioned(
+                      top: offset.dy + size.height + 15, // 버튼 바로 아래에 위치
+                      left: offset.dy + size.width / 2 + 70, // 버튼의 왼쪽 정렬
+                      child: Container(
+                        width: 165,
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).customBackgroundColor1,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              width: 1,
+                              color: lineColor1,
+                            )
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(
+                                height: 10,
+                              ),
+                              CustomTextButton(
+                                onPressed: (){
+                                  print("Button Clicked!!!");
+                                },
+                                text : "Change Profile",
+                                fontSize: fontSize2,
+                                boxDecoration: BoxDecoration(
+                                    color: Colors.transparent
+                                ),
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              CustomTextButton(
+                                onPressed: (){
+                                  print("Button Clicked!!!");
+                                  setState(() {
+                                    _redirectPage("/resetPassword");
+                                    removeOverlay();
+                                  });
+                                },
+                                text : "Change Password",
+                                fontSize: fontSize2,
+                                boxDecoration: BoxDecoration(
+                                    color: Colors.transparent
+                                ),
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              }
+          );
+        }
     );
   }
+
+
 
 
   Widget _buildSolidLine(double radius){
