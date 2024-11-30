@@ -1,67 +1,163 @@
 <?php
 session_start();
-header("Content-Type: application/json");
 
-// 데이터베이스 연결
-require 'db_connection.php';
-
-// CSRF 토큰 검증
-function validateCsrfToken($token) {
-    return isset($_SESSION['csrf_token']) && $token === $_SESSION['csrf_token'];
+// CSRF 토큰 생성 (세션에 저장)
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // 안전한 랜덤 값 생성
 }
-
-// HTTP 메서드에 따른 작업 분기
-$method = $_SERVER['REQUEST_METHOD'];
-
-if ($method === 'GET') {
-    // GET 요청: 북마크 목록 가져오기
-    try {
-        $stmt = $pdo->query("SELECT title, url FROM bookmarks");
-        $bookmarks = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        echo json_encode($bookmarks);
-    } catch (Exception $e) {
-        http_response_code(500);
-        echo json_encode(["success" => false, "error" => "Failed to fetch bookmarks"]);
-    }
-} elseif ($method === 'POST') {
-    // POST 요청: 새 북마크 저장
-    $data = json_decode(file_get_contents("php://input"), true);
-
-    if (!isset($data['csrf_token'], $data['title'], $data['url'])) {
-        http_response_code(400);
-        echo json_encode(["success" => false, "error" => "Invalid input data"]);
-        exit;
-    }
-
-    if (!validateCsrfToken($data['csrf_token'])) {
-        http_response_code(403);
-        echo json_encode(["success" => false, "error" => "Invalid CSRF token"]);
-        exit;
-    }
-
-    $title = trim($data['title']);
-    $url = trim($data['url']);
-
-    if (empty($title) || empty($url)) {
-        http_response_code(400);
-        echo json_encode(["success" => false, "error" => "Title and URL are required"]);
-        exit;
-    }
-
-    try {
-        $stmt = $pdo->prepare("INSERT INTO bookmarks (title, url) VALUES (?, ?)");
-        if ($stmt->execute([$title, $url])) {
-            echo json_encode(["success" => true, "message" => "Bookmark saved successfully"]);
-        } else {
-            http_response_code(500);
-            echo json_encode(["success" => false, "error" => "Failed to save bookmark"]);
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookmark Manager API</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
         }
-    } catch (Exception $e) {
-        http_response_code(500);
-        echo json_encode(["success" => false, "error" => "An error occurred"]);
-    }
-} else {
-    // 지원하지 않는 메서드
-    http_response_code(405);
-    echo json_encode(["success" => false, "error" => "Method not allowed"]);
-}
+        #message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+        #message.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        #message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        #bookmark-list {
+            margin-top: 20px;
+        }
+        .bookmark-item {
+            padding: 5px;
+            border-bottom: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Bookmark Manager API</h1>
+
+    <!-- 북마크 저장 폼 -->
+    <form id="bookmark-form">
+        <input type="text" name="title" id="title" placeholder="Bookmark Title" required>
+        <input type="url" name="url" id="url" placeholder="Bookmark URL" required>
+        <input type="hidden" name="csrf_token" id="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+        <button type="submit">Save Bookmark</button>
+    </form>
+
+    <div id="message"></div>
+
+    <!-- 북마크 목록 -->
+    <h2>Your Bookmarks</h2>
+    <div id="bookmark-list"></div>
+
+    <script>
+        $(document).ready(function () {
+            // 북마크 목록 로드
+            loadBookmarks();
+
+            // 북마크 저장
+            $("#bookmark-form").on("submit", function (e) {
+                e.preventDefault();
+
+                const title = $("#title").val().trim();
+                const url = $("#url").val().trim();
+                const csrfToken = $("#csrf_token").val();
+
+                if (!title || !url) {
+                    showMessage("Both title and URL are required.", "error");
+                    return;
+                }
+
+                if (!isValidURL(url)) {
+                    showMessage("Please enter a valid URL.", "error");
+                    return;
+                }
+
+                $.ajax({
+                    url: "save_bookmark.php",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({ title, url, csrf_token: csrfToken }),
+                    success: function (response) {
+                        if (response.error) {
+                            showMessage(response.error, "error");
+                        } else {
+                            showMessage("Bookmark saved successfully!", "success");
+                            loadBookmarks();
+                            $("#bookmark-form")[0].reset();
+                        }
+                    },
+                    error: function () {
+                        showMessage("Failed to save bookmark.", "error");
+                    }
+                });
+            });
+
+            // 북마크 불러오기
+            function loadBookmarks() {
+                $.ajax({
+                    url: "get_bookmarks.php",
+                    type: "GET",
+                    success: function (response) {
+                        if (response.error) {
+                            $("#bookmark-list").html(`<p>${response.error}</p>`);
+                        } else if (response.bookmarks && response.bookmarks.length > 0) {
+                            let html = "";
+                            response.bookmarks.forEach(bookmark => {
+                                html += `<div class="bookmark-item">
+                                    <a href="${escapeHTML(bookmark.url)}" target="_blank">${escapeHTML(bookmark.title)}</a>
+                                </div>`;
+                            });
+                            $("#bookmark-list").html(html);
+                        } else {
+                            $("#bookmark-list").html("<p>No bookmarks found.</p>");
+                        }
+                    },
+                    error: function () {
+                        $("#bookmark-list").html("<p>Failed to load bookmarks.</p>");
+                    }
+                });
+            }
+
+            // 유효한 URL 확인
+            function isValidURL(url) {
+                const pattern = /^(https?:\/\/[^\s$.?#].[^\s]*)$/i;
+                return pattern.test(url);
+            }
+
+            // 메시지 표시
+            function showMessage(message, type) {
+                $("#message")
+                    .text(message)
+                    .removeClass()
+                    .addClass(type)
+                    .fadeIn()
+                    .delay(3000)
+                    .fadeOut();
+            }
+
+            // HTML 인코딩
+            function escapeHTML(str) {
+                return str.replace(/[&<>"']/g, function (tag) {
+                    const chars = {
+                        "&": "&amp;",
+                        "<": "&lt;",
+                        ">": "&gt;",
+                        '"': "&quot;",
+                        "'": "&#39;"
+                    };
+                    return chars[tag] || tag;
+                });
+            }
+        });
+    </script>
+</body>
+</html>
