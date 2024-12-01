@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:contact1313/theme/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
@@ -8,6 +9,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 import '../api/api.dart';
 import '../model/user.dart';
+import '../theme/colors.dart';
+import '../theme/size.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({Key? key}) : super(key: key);
@@ -24,6 +27,7 @@ class _SignupPageState extends State<SignupPage> {
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
 
+  bool _validateEmail = true;
   checkUserEmail() async{
     try{
       var response = await http.post(
@@ -42,8 +46,14 @@ class _SignupPageState extends State<SignupPage> {
         if(responseBody['existEmail'] == true){
           // Fluttertoast.showToast(msg: "Email is already in use.");
           print("Email is using");
+          setState(() {
+            _validateEmail = false;
+          });
         }else{
           print("Email is not using now");
+          setState(() {
+            _validateEmail = true;
+          });
 
           // Fluttertoast.showToast(msg: "Email is good.");
           saveInfo();
@@ -64,7 +74,7 @@ class _SignupPageState extends State<SignupPage> {
       user_uid: null,
       user_id: userIdController.text.trim(),
       user_name: userNameController.text.trim(),
-      profile_image_url: "https://i2.ruliweb.com/img/21/02/20/177bdf6dd0b33948e.jpg",
+      profile_image_url: "https://figurefactories.com/cdn/shop/products/Guest_3-155115.jpg?v=1710251432",
       user_email: emailController.text.trim(),
       user_password: passwordController.text.trim()
     );
@@ -111,182 +121,170 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: Theme.of(context).customBackgroundColor2,
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.card_travel_outlined,
-                  color: Colors.deepPurple,
-                  size: 100,
-                ),
-                SizedBox(
-                  height: 30,
-                ),
-                Text(
-                  'Sign Up',
-                  style: GoogleFonts.bebasNeue(fontSize: 36.0),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Text('Thank you for join us',
-                    style: GoogleFonts.bebasNeue(fontSize: 28)),
-                SizedBox(
-                  height: 50,
-                ),
-                Form(
-                  key: formKey,
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            border: Border.all(color: Colors.white),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 20.0),
-                            child: TextFormField(
-                              controller: userIdController,
-                              validator: (val) =>
-                              val == "" ? "Please enter userID " : null,
-                              decoration: InputDecoration(
-                                  border: InputBorder.none, hintText: 'UserID'),
+        child: Row(
+          children: [
+            Expanded(child: Container()),
+            Container(
+              color: Theme.of(context).customBackgroundColor1,
+              width: MediaQuery.of(context).size.width * 0.3,
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Sign Up',
+                    style: TextStyle(fontSize: fontSize8, color: textColor2),
+                  ),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  Container(
+                    constraints: BoxConstraints(
+                        minWidth: 210
+                    ),
+                    width: MediaQuery.of(context).size.width * 0.15,
+                    child: Form(
+                      key: formKey,
+                      child: Column(
+                        children: [
+                          Container(
+                              decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                                border: Border.all(color: Colors.white),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 20.0),
+                                child: TextFormField(
+                                  controller: userIdController,
+                                  validator: (val) =>
+                                  val == "" ? "Please enter userID " : null,
+                                  decoration: InputDecoration(
+                                      border: InputBorder.none, hintText: 'UserID'),
+                                ),
+                              ),
                             ),
+                          SizedBox(
+                            height: 10,
                           ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            border: Border.all(color: Colors.white),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 20.0),
-                            child: TextFormField(
-                              controller: userNameController,
-                              validator: (val) =>
-                              val == "" ? "Please enter username " : null,
-                              decoration: InputDecoration(
-                                  border: InputBorder.none, hintText: 'UserName'),
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            border: Border.all(color: Colors.white),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 20.0),
-                            child: TextFormField(
-                              controller: emailController,
-                              validator: (val) =>
-                              val == "" ? "Please enter email" : null,
-                              decoration: InputDecoration(
-                                  border: InputBorder.none, hintText: 'Email'),
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                        child: Container(
-                          decoration: BoxDecoration(
+                          Container(
+                            decoration: BoxDecoration(
                               color: Colors.grey[200],
                               border: Border.all(color: Colors.white),
-                              borderRadius: BorderRadius.circular(12)),
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 20.0),
-                            child: TextFormField(
-                              controller: passwordController,
-                              validator: (val) =>
-                              val == "" ? "Please enter password" : null,
-                              obscureText: true,
-                              decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText: 'Password'),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 20.0),
+                              child: TextFormField(
+                                controller: userNameController,
+                                validator: (val) =>
+                                val == "" ? "Please enter username " : null,
+                                decoration: InputDecoration(
+                                    border: InputBorder.none, hintText: 'UserName'),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    if(formKey.currentState!.validate()){
-                      checkUserEmail();
-                      print("triggered");
-                    }
-
-                  },
-                  child: Container(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 25.0),
-                      child: Container(
-                        padding: EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(12)),
-                        child: Center(
-                          child: Text(
-                            'Sign up',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold),
+                          SizedBox(
+                            height: 10,
                           ),
-                        ),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              border: Border.all(color: Colors.white),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 20.0),
+                              child: TextFormField(
+                                controller: emailController,
+                                validator: (val) =>
+                                val == "" ? "Please enter email" : null,
+                                decoration: InputDecoration(
+                                    border: InputBorder.none, hintText: 'Email'),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              border: Border.all(color: Colors.white),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 20.0),
+                              child: TextFormField(
+                                controller: passwordController,
+                                validator: (val) =>
+                                val == "" ? "Please enter password" : null,
+                                obscureText: true,
+                                decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: 'Password'),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              if(formKey.currentState!.validate()){
+                                checkUserEmail();
+                                print("triggered");
+                              }
+
+                            },
+                            child: Container(
+                              child: Container(
+                                padding: EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                    color: Colors.redAccent,
+                                    borderRadius: BorderRadius.circular(12)),
+                                child: Center(
+                                  child: Text(
+                                    _validateEmail ? 'Sign Up' : 'Email is already in use.',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 25,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text('Already registered?'),
+                              GestureDetector(
+                                onTap: () => Get.back(),
+                                child: Text(
+                                  ' Go back Login page!',
+                                  style: TextStyle(
+                                      color: Colors.blue, fontWeight: FontWeight.bold),
+                                ),
+                              )
+                            ],
+                          )
+                        ],
                       ),
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: 25,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Already registered?'),
-                    GestureDetector(
-                      onTap: () => Get.back(),
-                      child: Text(
-                        ' Go back Login page!',
-                        style: TextStyle(
-                            color: Colors.blue, fontWeight: FontWeight.bold),
-                      ),
-                    )
-                  ],
-                )
-              ],
+                ],
+              ),
             ),
-          ),
+            ),
+          ],
         ),
       ),
     );

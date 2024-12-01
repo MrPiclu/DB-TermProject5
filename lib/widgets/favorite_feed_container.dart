@@ -141,7 +141,6 @@ class _FavoriteFeedContainerState extends State<FavoriteFeedContainer> {
                 ? Center(
                     child: Container(
                         width: 603,
-                        child: CircularProgressIndicator()
                     ),
                   )
                 : idx == 0 ? _buildMainUploadSection(context)

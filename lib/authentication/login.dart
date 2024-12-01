@@ -191,13 +191,13 @@ class _LoginPageState extends State<LoginPage> {
                                 child: Container(
                                   padding: EdgeInsets.all(20),
                                   decoration: BoxDecoration(
-                                      color: Theme.of(context).customIconBackgroundColor1,
+                                      color: Colors.redAccent,
                                       borderRadius: BorderRadius.circular(12)),
                                   child: Center(
                                     child: Text(
-                                      'Sign in',
+                                      'Login',
                                       style: TextStyle(
-                                          color: Theme.of(context).customIconColor1,
+                                          color: Colors.white,
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold),
                                     ),

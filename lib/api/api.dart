@@ -26,5 +26,4 @@ class API{
   static const uploadNotify = "$hostConnect/user/update_notification.php";
   static const downloadNotify = "$hostConnect/user/download_notification.php";
   static const downloadFavTweet = "$hostConnect/user/download_fav_tweet.php";
-
 }

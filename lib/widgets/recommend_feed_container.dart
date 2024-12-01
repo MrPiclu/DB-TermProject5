@@ -70,7 +70,6 @@ class _RecommendFeedContainerState extends State<RecommendFeedContainer> {
       var res = await http.post(
           Uri.parse(API.uploadTweet),
           body: {
-            'tweet_id' : 18.toString(),
             'body' : tweetContentController.text.trim(),
             'user_uid' : currentUserInfo.user_uid.toString(),
             'media_url' : ImgUrl.toString(),
@@ -78,7 +77,6 @@ class _RecommendFeedContainerState extends State<RecommendFeedContainer> {
           });
 
       print("3");
-
       print(res.statusCode);
       print(res.body);
 
@@ -207,7 +205,6 @@ class _RecommendFeedContainerState extends State<RecommendFeedContainer> {
                 ? Center(
                     child: Container(
                         width: 603,
-                        child: CircularProgressIndicator()
                     ),
                   )
                 : idx == 0 ? _buildMainUploadSection(context)

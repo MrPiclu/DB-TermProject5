@@ -197,7 +197,6 @@ class _ProfileContainerState extends State<ProfileContainer> {
                         ? Center(
                       child: Container(
                           width: 603,
-                          child: CircularProgressIndicator()
                       ),
                     )
                     : idx == 0 ? _buildProfileSection()
